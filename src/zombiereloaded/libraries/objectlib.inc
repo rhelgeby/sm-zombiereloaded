@@ -35,7 +35,7 @@
 #include <sourcemod>
 
 #include "zombiereloaded/libraries/arrays.inc"
-#include "zombiereloaded/utilities.inc"
+#include "zombiereloaded/libraries/utilities.inc"
 
 /*____________________________________________________________________________*/
 

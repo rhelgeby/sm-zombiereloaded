@@ -98,7 +98,7 @@ new Object:TempParseContext = INVALID_OBJECT;
 
 /*____________________________________________________________________________*/
 
-#include "libraries/objectlib/kverrors"
+#include "zombiereloaded/libraries/objectlib/kverrors"
 
 /*____________________________________________________________________________*/
 
