@@ -1,0 +1,9 @@
+Game adapter
+
+Module that implements the abstract events for round start and other events for
+the active game (CS:S, TF2, etc).
+
+Events and functionality (like flashlight and team swap) should probably be a
+separate module.
+
+Handles late loading by replaying essential game events.

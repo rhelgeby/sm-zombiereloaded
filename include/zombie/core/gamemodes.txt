@@ -1,0 +1,13 @@
+Game modes decides which modules that are allowed in a certain game mode.
+
+The game mode manager may automatically load and unload registered modules by
+using ServerCommand and "sm plugins unload". If this doesn't work we'll have to
+force modules to implement OnModuleEnable and OnModuleDisable events.
+
+OnGameModeActivate
+OnGameModeDeactivate
+
+Modules should NOT do anything that modifies the game engine state before the
+game mode is activated. This could be stuff like setting model, modifying entity
+properties or cvars. They need to hook and wait for the OnGameModeActivate
+event.
