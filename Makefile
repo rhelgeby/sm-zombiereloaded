@@ -42,7 +42,8 @@ prepare_builddir:
 	@mkdir -p $(BUILDDIR)
 
 %.smx: %.sp
-	#$(VERSIONDUMP)
+	@echo "Compiling"
+#	$(VERSIONDUMP)
 	$(SPCOMP) -i$(SOURCEDIR) -i$(SMINCLUDES) -o$(BUILDDIR)/$@ $<
 
 clean:
