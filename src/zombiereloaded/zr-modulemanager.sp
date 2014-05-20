@@ -3,7 +3,7 @@
  *
  *  Zombie:Reloaded
  *
- *  File:           modulemanager.sp
+ *  File:           zr-modulemanager.sp
  *  Description:    Implements the Module Manager API for registering and
  *                  managing modules.
  *
