@@ -239,7 +239,7 @@ ZMModule:AddModule(Handle:ownerPlugin, const String:moduleName[])
 
 /*____________________________________________________________________________*/
 
-public RemoveModule(ZMModule:module)
+RemoveModule(ZMModule:module)
 {
     RemoveModuleFeatures(module);
     RemoveModuleFromList(module);
@@ -309,7 +309,7 @@ RemoveModuleFromIndex(ZMModule:module)
 
 /*____________________________________________________________________________*/
 
-public ZMFeature:AddFeature(ZMModule:module, const String:name[])
+ZMFeature:AddFeature(ZMModule:module, const String:name[])
 {
     new ZMFeature:feature = CreateFeature(module, name);
     
@@ -321,7 +321,7 @@ public ZMFeature:AddFeature(ZMModule:module, const String:name[])
 
 /*____________________________________________________________________________*/
 
-public RemoveFeature(ZMFeature:feature)
+RemoveFeature(ZMFeature:feature)
 {
     RemoveFeatureFromList(feature);
     RemoveFeatureFromIndex(feature);
