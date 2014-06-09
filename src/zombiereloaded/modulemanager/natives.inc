@@ -69,16 +69,10 @@ public API_CreateModule(Handle:plugin, numParams)
     new String:name[MODULE_STRING_LEN];
     GetNativeString(1, name, sizeof(name));
     
-    new ZMModule:module = CreateModule(plugin, name);
+    AssertPluginHasNoModule(plugin);
+    AssertModuleNameNotExists(name);
     
-    if (module == INVALID_ZM_MODULE)
-    {
-        ThrowNativeError(SP_ERROR_ABORTED, "Failed to create module.");
-    }
-    
-    // Update indexes.
-    AddModuleToIndex(module);
-    
+    new ZMModule:module = AddModule(plugin, name);
     return _:module;
 }
 
@@ -95,15 +89,8 @@ public API_CreateModule(Handle:plugin, numParams)
 //native ZM_DeleteModule();
 public API_DeleteModule(Handle:plugin, numParams)
 {
-    new ZMModule:module = GetModuleByPlugin(plugin);
-    
-    if (module == INVALID_ZM_MODULE)
-    {
-        ThrowNativeError(SP_ERROR_ABORTED, "No module is registered on this plugin.");
-    }
-    
-    RemoveModuleFromIndex(module);
-    DeleteModule(module);
+    new ZMModule:module = GetModuleByPluginOrFail(plugin);
+    RemoveModule(module);
 }
 
 /*____________________________________________________________________________*/
@@ -233,6 +220,8 @@ public API_SetModuleDescription(Handle:plugin, numParams)
 public API_CreateFeature(Handle:plugin, numParams)
 {
     ThrowNativeError(SP_ERROR_ABORTED, "Not implemented.");
+    
+    //AssertFeatureNameNotExists(name);
 }
 
 /*____________________________________________________________________________*/
@@ -251,6 +240,8 @@ public API_CreateFeature(Handle:plugin, numParams)
 public API_DeleteFeature(Handle:plugin, numParams)
 {
     ThrowNativeError(SP_ERROR_ABORTED, "Not implemented.");
+    
+    //AssertFeatureExists(feature);
 }
 
 /*____________________________________________________________________________*/

@@ -30,6 +30,7 @@
 
 #include "zombiereloaded/libraries/objectlib"
 #include "zombiereloaded/modulemanager/module"
+#include "zombiereloaded/modulemanager/feature"
 #include "zombiereloaded/modulemanager/natives"
 
 /*____________________________________________________________________________*/
@@ -86,9 +87,14 @@ new Handle:ModuleNameIndex = INVALID_HANDLE;
 new Handle:ModulePluginIndex = INVALID_HANDLE;
 
 /**
- * ADT Trie with mappings of feature names to module IDs.
+ * ADT Array with references to all features.
  */
-new Handle:ModuleFeatureIndex = INVALID_HANDLE;
+new Handle:FeatureList = INVALID_HANDLE;
+
+/**
+ * ADT Trie with mappings of feature names to feature IDs.
+ */
+new Handle:FeatureNameIndex = INVALID_HANDLE;
 
 /*____________________________________________________________________________*/
 
@@ -160,6 +166,27 @@ bool:PluginHasModule(Handle:plugin)
 
 /*____________________________________________________________________________*/
 
+ZMFeature:GetFeatureByName(const String:name[])
+{
+    new ZMFeature:feature = INVALID_ZM_FEATURE;
+    if (GetTrieValue(FeatureNameIndex, name, feature))
+    {
+        return feature;
+    }
+    
+    return INVALID_ZM_FEATURE;
+}
+
+/*____________________________________________________________________________*/
+
+bool:FeatureExists(const String:name[])
+{
+    new ZMFeature:feature = GetFeatureByName(name);
+    return IsValidFeature(feature);
+}
+
+/*____________________________________________________________________________*/
+
 InitializeDataStorage()
 {
     if (ModuleList == INVALID_HANDLE)
@@ -177,13 +204,49 @@ InitializeDataStorage()
         ModulePluginIndex = CreateTrie();
     }
 
-    if (ModuleFeatureIndex == INVALID_HANDLE)
+    if (FeatureList == INVALID_HANDLE)
     {
-        ModuleFeatureIndex = CreateTrie();
+        FeatureList = CreateArray();
+    }
+    
+    if (FeatureNameIndex == INVALID_HANDLE)
+    {
+        FeatureNameIndex = CreateTrie();
     }
 }
 
 /*____________________________________________________________________________*/
+
+ZMModule:AddModule(Handle:ownerPlugin, const String:moduleName[])
+{
+    new ZMModule:module = CreateModule(ownerPlugin, moduleName);
+    
+    AddModuleToList(module);
+    AddModuleToIndex(module);
+    
+    return module;
+}
+
+/*____________________________________________________________________________*/
+
+public RemoveModule(ZMModule:module)
+{
+    RemoveModuleFeatures(module);
+    RemoveModuleFromList(module);
+    RemoveModuleFromIndex(module);
+    
+    DeleteModule(module);
+}
+
+/*____________________________________________________________________________*/
+
+AddModuleToList(ZMModule:module)
+{
+    PushArrayCell(ModuleList, module);
+}
+
+/*____________________________________________________________________________*/
+
 
 AddModuleToIndex(ZMModule:module)
 {
@@ -198,6 +261,19 @@ AddModuleToIndex(ZMModule:module)
     
     SetTrieValue(ModuleNameIndex, name, module);
     SetTrieValue(ModulePluginIndex, pluginID, module);
+}
+
+/*____________________________________________________________________________*/
+
+RemoveModuleFromList(ZMModule:module)
+{
+    new index = FindValueInArray(ModuleList, module);
+    if (index < 0)
+    {
+        ThrowError("Module is not in list.");
+    }
+    
+    RemoveFromArray(ModuleList, index);
 }
 
 /*____________________________________________________________________________*/
@@ -219,4 +295,164 @@ RemoveModuleFromIndex(ZMModule:module)
     
     RemoveFromTrie(ModuleNameIndex, name);
     RemoveFromTrie(ModulePluginIndex, pluginHex);
+}
+
+/*____________________________________________________________________________*/
+
+public ZMFeature:AddFeature(Handle:plugin, const String:name[])
+{
+    new ZMModule:module = GetModuleByPluginOrFail(plugin);
+    
+    new ZMFeature:feature = CreateFeature(module, name);
+    
+    AddFeatureToList(feature);
+    AddFeatureToIndex(feature);
+    
+    return feature;
+}
+
+/*____________________________________________________________________________*/
+
+public RemoveFeature(ZMFeature:feature)
+{
+    RemoveFeatureFromList(feature);
+    RemoveFeatureFromIndex(feature);
+    
+    DeleteFeature(feature);
+}
+
+/*____________________________________________________________________________*/
+
+AddFeatureToList(ZMFeature:feature)
+{
+    PushArrayCell(FeatureList, feature);
+}
+
+/*____________________________________________________________________________*/
+
+RemoveFeatureFromList(ZMFeature:feature)
+{
+    new index = FindValueInArray(FeatureList, feature);
+    if (index < 0)
+    {
+        ThrowError("Feature is not in list.");
+    }
+    
+    RemoveFromArray(FeatureList, index);
+}
+
+/*____________________________________________________________________________*/
+
+AddFeatureToIndex(ZMFeature:feature)
+{
+    decl String:name[FEATURE_STRING_LEN];
+    name[0] = 0;
+    GetFeatureName(feature, name, sizeof(name));
+    
+    SetTrieValue(FeatureNameIndex, name, feature);
+}
+
+/*____________________________________________________________________________*/
+
+RemoveFeatureFromIndex(ZMFeature:feature)
+{
+    decl String:name[FEATURE_STRING_LEN];
+    name[0] = 0;
+    GetFeatureName(feature, name, sizeof(name));
+    
+    RemoveFromTrie(FeatureNameIndex, name);
+}
+
+/*____________________________________________________________________________*/
+
+RemoveModuleFeatures(ZMModule:module)
+{
+    new Handle:featureList = GetModuleFeatures(module);
+    
+    new size = GetArraySize(featureList);
+    for (new i = 0; i < size; i++)
+    {
+        new ZMFeature:feature = ZMFeature:GetArrayCell(featureList, i);
+        RemoveFeature(feature);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+Handle:GetModuleFeatures(ZMModule:module)
+{
+    new Handle:featureList = CreateArray();
+    
+    new numFeatures = GetArraySize(FeatureList);
+    for (new i = 0; i < numFeatures; i++)
+    {
+        new ZMFeature:feature = GetArrayCell(FeatureList, i);
+        new ZMModule:featureOwner = GetFeatureOwner(feature);
+        
+        if (featureOwner == module)
+        {
+            PushArrayCell(featureList, feature);
+        }
+    }
+    
+    return featureList;
+}
+
+/*____________________________________________________________________________*/
+
+/**
+ * Throws a native error if the plugin has no module registered to it.
+ */
+AssertPluginHasNoModule(Handle:plugin)
+{
+    new ZMModule:module = GetModuleByPlugin(plugin);
+    if (!IsValidModule(module))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "No module is registered to this plugin.");
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertModuleNameNotExists(const String:moduleName[])
+{
+    new ZMModule:module = GetModuleByName(moduleName);
+    if (IsValidModule(module))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Module name is already in use: %s", moduleName);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+ZMModule:GetModuleByPluginOrFail(Handle:plugin)
+{
+    new ZMModule:module = GetModuleByPlugin(plugin);
+    if (IsValidModule(module))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "A module is already registered to this plugin.");
+    }
+    
+    return module;
+}
+
+/*____________________________________________________________________________*/
+
+AssertFeatureNameNotExists(const String:name[])
+{
+    new ZMFeature:feature = GetFeatureByName(name);
+    if (IsValidFeature(feature))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Feature name is already in use: %s", name);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertFeatureExists(ZMFeature:feature)
+{
+    if (!IsValidFeature(feature))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Invalid feature: %x", feature);
+    }
 }
