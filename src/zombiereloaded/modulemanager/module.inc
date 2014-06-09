@@ -116,6 +116,13 @@ GetModuleDescription(ZMModule:module, String:buffer[], maxlen)
 
 /*____________________________________________________________________________*/
 
+SetModuleDescription(ZMModule:module, const String:description[])
+{
+    return ObjLib_SetString(Object:module, "description", description);
+}
+
+/*____________________________________________________________________________*/
+
 bool:IsValidModule(ZMModule:module)
 {
     return module != INVALID_ZM_MODULE;

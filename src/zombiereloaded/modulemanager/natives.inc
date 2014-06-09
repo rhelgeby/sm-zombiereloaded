@@ -197,7 +197,12 @@ public API_GetModuleDescription(Handle:plugin, numParams)
 //native ZM_SetModuleDescription(const String:description[]);
 public API_SetModuleDescription(Handle:plugin, numParams)
 {
-    ThrowNativeError(SP_ERROR_ABORTED, "Not implemented.");
+    new ZMModule:module = GetModuleByPluginOrFail(plugin);
+    
+    new String:description[MODULE_STRING_LEN];
+    GetNativeString(1, description, sizeof(description));
+    
+    SetModuleDescription(module, description);
 }
 
 /*____________________________________________________________________________*/
