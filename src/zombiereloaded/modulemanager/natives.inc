@@ -219,9 +219,15 @@ public API_SetModuleDescription(Handle:plugin, numParams)
 //native ZMFeature:ZM_CreateFeature(const String:identifier[]);
 public API_CreateFeature(Handle:plugin, numParams)
 {
-    ThrowNativeError(SP_ERROR_ABORTED, "Not implemented.");
+    new String:identifier[MODULE_STRING_LEN];
+    GetNativeString(1, identifier, sizeof(identifier));
     
-    //AssertFeatureNameNotExists(name);
+    AssertFeatureNameNotExists(identifier);
+    
+    new ZMModule:module = GetModuleByPluginOrFail(plugin);
+    new ZMFeature:feature = AddFeature(module, identifier);
+    
+    return _:feature;
 }
 
 /*____________________________________________________________________________*/
@@ -239,9 +245,12 @@ public API_CreateFeature(Handle:plugin, numParams)
 //native ZM_DeleteFeature(ZMFeature:feature);
 public API_DeleteFeature(Handle:plugin, numParams)
 {
-    ThrowNativeError(SP_ERROR_ABORTED, "Not implemented.");
+    new ZMFeature:feature = GetNativeCell(1);
     
-    //AssertFeatureExists(feature);
+    AssertFeatureExists(feature);
+    AssertIsFeatureOwner(plugin, feature);
+    
+    RemoveFeature(feature);
 }
 
 /*____________________________________________________________________________*/
@@ -256,22 +265,31 @@ public API_DeleteFeature(Handle:plugin, numParams)
 //native ZMFeature:ZM_GetFeature(const String:identifier[]);
 public API_GetFeature(Handle:plugin, numParams)
 {
-    ThrowNativeError(SP_ERROR_ABORTED, "Not implemented.");
+    new String:identifier[MODULE_STRING_LEN];
+    GetNativeString(1, identifier, sizeof(identifier));
+    
+    new ZMFeature:feature = GetFeatureByName(identifier);
+    return _:feature;
 }
 
 /*____________________________________________________________________________*/
 
 /**
- * Gets the specified feature's owner module.
+ * Gets the owner module of the specified feature.
  *
  * @parma feature       Feature to look up.
  *
- * @return              Module ID if found, otherwise INVALID_ZM_MODULE.
+ * @return              Module ID.
+ * @error               Invalid feature.
  */
 //native ZMModule:ZM_GetFeatureOwner(ZMFeature:feature);
 public API_GetFeatureOwner(Handle:plugin, numParams)
 {
-    ThrowNativeError(SP_ERROR_ABORTED, "Not implemented.");
+    new ZMFeature:feature = ZMFeature:GetNativeCell(1);
+    AssertFeatureExists(feature);
+    
+    new ZMModule:featureOwner = GetFeatureOwner(feature);
+    return _:featureOwner;
 }
 
 /*____________________________________________________________________________*/

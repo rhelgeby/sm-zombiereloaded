@@ -187,6 +187,16 @@ bool:FeatureExists(const String:name[])
 
 /*____________________________________________________________________________*/
 
+bool:IsFeatureOwner(Handle:plugin, ZMFeature:feature)
+{
+    new ZMModule:module = GetModuleByPlugin(plugin);
+    new ZMModule:featureOwner = GetFeatureOwner(feature);
+    
+    return module == featureOwner;
+}
+
+/*____________________________________________________________________________*/
+
 InitializeDataStorage()
 {
     if (ModuleList == INVALID_HANDLE)
@@ -299,10 +309,8 @@ RemoveModuleFromIndex(ZMModule:module)
 
 /*____________________________________________________________________________*/
 
-public ZMFeature:AddFeature(Handle:plugin, const String:name[])
+public ZMFeature:AddFeature(ZMModule:module, const String:name[])
 {
-    new ZMModule:module = GetModuleByPluginOrFail(plugin);
-    
     new ZMFeature:feature = CreateFeature(module, name);
     
     AddFeatureToList(feature);
@@ -454,5 +462,15 @@ AssertFeatureExists(ZMFeature:feature)
     if (!IsValidFeature(feature))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid feature: %x", feature);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertIsFeatureOwner(Handle:plugin, ZMFeature:feature)
+{
+    if (!IsFeatureOwner(plugin, feature))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "This plugin does not own the specified feature: %x", feature);
     }
 }

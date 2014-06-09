@@ -319,11 +319,12 @@ stock bool:ZM_FeatureExists(const String:identifier[])
 /*____________________________________________________________________________*/
 
 /**
- * Gets the specified feature's owner module.
+ * Gets the owner module of the specified feature.
  *
  * @parma feature       Feature to look up.
  *
- * @return              Module ID if found, otherwise INVALID_ZM_MODULE.
+ * @return              Module ID.
+ * @error               Invalid feature.
  */
 native ZMModule:ZM_GetFeatureOwner(ZMFeature:feature);
 
