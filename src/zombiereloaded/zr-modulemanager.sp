@@ -436,7 +436,7 @@ AssertModuleNameNotExists(const String:moduleName[])
 ZMModule:GetModuleByPluginOrFail(Handle:plugin)
 {
     new ZMModule:module = GetModuleByPlugin(plugin);
-    if (IsValidModule(module))
+    if (ZM_IsValidModule(module))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "A module is already registered to this plugin.");
     }
