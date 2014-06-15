@@ -148,7 +148,9 @@ functag ZM_OnEventsCreated();
  *
  * @param eventName     Name of new event (case sensitive).
  *
- * @return              Event ID if successful, otherwise INVALID_ZM_EVENT.
+ * @return              Event ID.
+ * @error               Caller is not a module, blank event name, or event name
+ *                      already in use.
  */
 native ZMEvent:ZM_CreateEvent(const String:eventName);
 
@@ -157,22 +159,27 @@ native ZMEvent:ZM_CreateEvent(const String:eventName);
 /**
  * Deletes an existing event from the event manager.
  *
- * @param eventID       Event to delete.
+ * @param event         Event to delete.
  *
- * @return              True if deleted, otherwise false.
+ * @error               Caller is not a module, not the event owner, or event
+ *                      ID is invalid.
  */
-native bool:ZM_DeleteEvent(ZMEvent:eventID);
+native ZM_DeleteEvent(ZMEvent:event);
 
 /*____________________________________________________________________________*/
 
 /**
  * Validates an event ID.
  *
- * @param eventID       Event to validate.
+ * @param event         Event to validate.
  *
- * @return              True if event exists, otherwise false.
+ * @return              True if valid, otherwise false.
+ * @error               Caller is not a module.
  */
-native bool:ZM_IsValidEvent(ZMEvent:eventID);
+stock bool:ZM_IsValidEvent(ZMEvent:event)
+{
+    return event != INVALID_ZM_EVENT;
+}
 
 /*____________________________________________________________________________*/
 
@@ -181,9 +188,26 @@ native bool:ZM_IsValidEvent(ZMEvent:eventID);
  *
  * @param eventName     Event name to look up.
  *
- * @return              Event id if successful, otherwise INVALID_ZM_EVENT.
+ * @return              Event ID if found, otherwise INVALID_ZM_EVENT.
+ * @error               Caller is not a module.
  */
 native ZMEvent:ZM_GetEventByName(const String:eventName[]);
+
+/*____________________________________________________________________________*/
+
+/**
+ * Returns whether the specified event exists.
+ *
+ * @param eventName     Event name to look up.
+ *
+ * @return              True if event exists, false otherwise.
+ * @error               Caller is not a module.
+ */
+stock bool:ZM_EventExists(const String:eventName[])
+{
+    new ZMEvent:event = ZM_GetEventByName(eventName);
+    return ZM_IsValidEvent(event);
+}
 
 /*____________________________________________________________________________*/
 
@@ -199,8 +223,8 @@ native ZMEvent:ZM_GetEventByName(const String:eventName[]);
  * @param callback      Function callback to add.
  *
  * @noreturn
- * @error               Invalid event ID or callback, or caller does not own
- *                      this event.
+ * @error               Caller is not a module, not the event owner, callback or
+ *                      event ID is invalid.
  */
 native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
 
@@ -213,7 +237,7 @@ native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
  * @param callback      Callback to unhook.
  *
  * @noreturn
- * @error               Invalid event ID or callback.
+ * @error               Caller is not a module, callback or event ID is invalid.
  */
 native ZM_UnhookEvent(ZMEvent:event, Function:callback);
 
@@ -225,7 +249,8 @@ native ZM_UnhookEvent(ZMEvent:event, Function:callback);
  * @param callback      Function to call when event is fired.
  *
  * @return              Event ID.
- * @error               Event is already hooked by the module.
+ * @error               Caller is not a module, or event is already hooked by
+ *                      the module.
  */
 native ZMEvent:ZM_HookEventsCreate(ZM_OnEventsCreate:callback);
 
@@ -237,6 +262,7 @@ native ZMEvent:ZM_HookEventsCreate(ZM_OnEventsCreate:callback);
  * @param callback      Function to call when event is fired.
  *
  * @return              Event ID.
- * @error               Event is already hooked by the module.
+ * @error               Caller is not a module, or event is already hooked by
+ *                      the module.
  */
 native ZMEvent:ZM_HookEventsCreated(ZM_OnEventsCreated:callback);
