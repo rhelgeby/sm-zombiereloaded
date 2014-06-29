@@ -52,25 +52,6 @@ public Plugin:myinfo =
 
 /*____________________________________________________________________________*/
 
-#define MODULE_NAME_LENGTH          64
-#define MODULE_NAME_DESCRIPTION     255
-
-/*____________________________________________________________________________*/
-
-/**
- * Defines the internal module data structure. Should not be exposed.
- */
-enum ModuleData
-{
-    /** Handle to plugin that created the module. */
-    Handle:Module_Plugin,
-    
-    String:Module_Name[MODULE_NAME_LENGTH],
-    String:Module_Description[MODULE_NAME_DESCRIPTION]
-}
-
-/*____________________________________________________________________________*/
-
 /**
  * ADT Array with references to all modules.
  */
