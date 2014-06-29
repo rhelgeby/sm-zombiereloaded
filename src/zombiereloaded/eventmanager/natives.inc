@@ -29,8 +29,8 @@ InitAPI()
     PrintToServer("Initializing event manager API.");
     
     CreateNative("ZM_CreateEvent", API_CreateEvent);
-    /*CreateNative("ZM_DeleteEvent", API_DeleteEvent);
-    CreateNative("ZM_GetEventByName", API_GetEventByName);
+    CreateNative("ZM_DeleteEvent", API_DeleteEvent);
+    /*CreateNative("ZM_GetEventByName", API_GetEventByName);
     CreateNative("ZM_HookEvent", API_HookEvent);
     CreateNative("ZM_UnhookEvent", API_UnhookEvent);
     CreateNative("ZM_HookEventsCreate", API_HookEventsCreate);
@@ -67,10 +67,20 @@ public API_CreateEvent(Handle:plugin, numParams)
  *
  * @param event         Event to delete.
  *
+ * @noreturn
  * @error               Caller is not a module, not the event owner, or event
  *                      ID is invalid.
  */
 //native ZM_DeleteEvent(ZMEvent:event);
+public API_DeleteEvent(Handle:plugin, numParams)
+{
+    new ZMModule:module = ZM_GetModuleByPluginOrFail(plugin);
+    new ZMEvent:event = GetNativeCell(1);
+    
+    AssertIsEventOwner(module, event);
+    
+    RemoveZMEvent(event);
+}
 
 /*____________________________________________________________________________*/
 

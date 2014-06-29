@@ -108,6 +108,20 @@ ZMEvent:AddZMEvent(ZMModule:owner, const String:name[])
 
 /*____________________________________________________________________________*/
 
+RemoveZMEvent(ZMEvent:event)
+{
+    AssertIsValidEvent(event);
+    
+    // TODO: Unhook event callbacks.
+    
+    RemoveEventFromList(event);
+    RemoveEventFromIndex(event);
+    
+    DeleteZMEvent(event);
+}
+
+/*____________________________________________________________________________*/
+
 AddEventToList(ZMEvent:event)
 {
     PushArrayCell(EventList, event);
@@ -121,6 +135,29 @@ AddEventToIndex(ZMEvent:event)
     GetZMEventName(event, name, sizeof(name));
     
     SetTrieValue(EventNameIndex, name, event);
+}
+
+/*____________________________________________________________________________*/
+
+RemoveEventFromList(ZMEvent:event)
+{
+    new index = FindValueInArray(EventList, event);
+    if (index < 0)
+    {
+        ThrowError("Event is not in list.");
+    }
+    
+    RemoveFromArray(EventList, index);
+}
+
+/*____________________________________________________________________________*/
+
+RemoveEventFromIndex(ZMEvent:event)
+{
+    new String:name[EVENT_STRING_LEN];
+    GetZMEventName(event, name, sizeof(name));
+    
+    RemoveFromTrie(EventNameIndex, name);
 }
 
 /*____________________________________________________________________________*/
@@ -160,5 +197,15 @@ AssertEventNameNotEmpty(const String:name[])
     if (strlen(name) == 0)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Event name is empty.");
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertIsEventOwner(ZMModule:module, ZMEvent:event)
+{
+    if (GetZMEventOwner(event) != module)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "This module does not own the specified event: %x", event);
     }
 }
