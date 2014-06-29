@@ -40,7 +40,7 @@ InitEventType()
     }
     
     new blockSize = ByteCountToCells(EVENT_STRING_LEN);
-    new keySize = ByteCountToCells(Event_KEY_LEN);
+    new keySize = ByteCountToCells(EVENT_KEY_LEN);
     
     EventType = ObjLib_CreateType(blockSize, keySize);
     
@@ -50,22 +50,11 @@ InitEventType()
 
 /*____________________________________________________________________________*/
 
-ZMEvent:CreateEvent(ZMModule:owner, const String:name[])
+ZMEvent:CreateZMEvent(ZMModule:owner, const String:name[])
 {
-    if (!ZM_IsValidModule(owner))
-    {
-        ThrowNativeError(SP_ERROR_ABORTED, "Invalid owner module: %x", owner);
-    }
-    
-    if (strlen(name) == 0)
-    {
-        ThrowNativeError(SP_ERROR_ABORTED, "Name is empty.");
-    }
-    
-    if (ZM_EventExists(name))
-    {
-        ThrowNativeError(SP_ERROR_ABORTED, "Event name is already in use.");
-    }
+    AssertIsValidZMModule(owner);
+    AssertEventNameNotEmpty(name);
+    AssertEventNameNotExists(name);
     
     InitEventType();
     
@@ -80,7 +69,7 @@ ZMEvent:CreateEvent(ZMModule:owner, const String:name[])
 
 /*____________________________________________________________________________*/
 
-DeleteEvent(ZMEvent:event)
+DeleteZMEvent(ZMEvent:event)
 {   
     if (!ZM_IsValidEvent(event))
     {
@@ -94,14 +83,14 @@ DeleteEvent(ZMEvent:event)
 
 /*____________________________________________________________________________*/
 
-ZMModule:GetEventOwner(ZMEvent:event)
+ZMModule:GetZMEventOwner(ZMEvent:event)
 {
     return ZMModule:ObjLib_GetCell(Object:event, "owner");
 }
 
 /*____________________________________________________________________________*/
 
-GetEventName(ZMEvent:event, String:buffer[], maxlen)
+GetZMEventName(ZMEvent:event, String:buffer[], maxlen)
 {
     return ObjLib_GetString(Object:event, "name", buffer, maxlen);
 }

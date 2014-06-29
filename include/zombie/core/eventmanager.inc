@@ -115,7 +115,7 @@ each plugin.
  */
 enum ZMEvent
 {
-    INVALID_ZM_EVENT;
+    INVALID_ZM_EVENT
 }
 
 /*____________________________________________________________________________*/
@@ -129,13 +129,13 @@ enum ZMEvent
  * should create them in this event.
  */
 #define ZM_ON_EVENTS_CREATE "OnEventsCreate"
-functag ZM_OnEventsCreate();
+functag public ZM_OnEventsCreate();
 
 /**
  * All events are created. Modules should register event hooks in this event.
  */
 #define ZM_ON_EVENTS_CREATED "OnEventsCreated"
-functag ZM_OnEventsCreated();
+functag public ZM_OnEventsCreated();
 
 /** 
  * @endsection

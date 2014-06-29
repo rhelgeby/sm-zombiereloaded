@@ -50,3 +50,115 @@ public Plugin:myinfo =
 };
 
 /*____________________________________________________________________________*/
+
+/**
+ * ADT Array with references to all events.
+ */
+new Handle:EventList = INVALID_HANDLE;
+
+/**
+ * ADT Trie with mappings of event names to events.
+ */
+new Handle:EventNameIndex = INVALID_HANDLE;
+
+/*____________________________________________________________________________*/
+
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+    PrintToServer("Loading event manager.");
+    
+    InitAPI();
+    return APLRes_Success;
+}
+
+/*____________________________________________________________________________*/
+
+public OnPluginStart()
+{
+    InitializeDataStorage();
+    PrintToServer("Event manager loaded.");
+}
+
+/*____________________________________________________________________________*/
+
+InitializeDataStorage()
+{
+    if (EventList == INVALID_HANDLE)
+    {
+        EventList = CreateArray();
+    }
+    
+    if (EventNameIndex == INVALID_HANDLE)
+    {
+        EventNameIndex = CreateArray();
+    }
+}
+
+/*____________________________________________________________________________*/
+
+ZMEvent:AddZMEvent(ZMModule:owner, const String:name[])
+{
+    new ZMEvent:event = CreateZMEvent(owner, name);
+
+    AddEventToList(event);    
+    AddEventToIndex(event);
+    
+    return event;
+}
+
+/*____________________________________________________________________________*/
+
+AddEventToList(ZMEvent:event)
+{
+    PushArrayCell(EventList, event);
+}
+
+/*____________________________________________________________________________*/
+
+AddEventToIndex(ZMEvent:event)
+{
+    new String:name[EVENT_STRING_LEN];
+    GetZMEventName(event, name, sizeof(name));
+    
+    SetTrieValue(EventNameIndex, name, event);
+}
+
+/*____________________________________________________________________________*/
+
+bool:EventExists(const String:name[])
+{
+    return GetEventByName(name) != INVALID_ZM_EVENT;
+}
+
+/*____________________________________________________________________________*/
+
+ZMEvent:GetEventByName(const String:name[])
+{
+    new ZMEvent:event = INVALID_ZM_EVENT;
+    if (GetTrieValue(EventNameIndex, name, event))
+    {
+        return event;
+    }
+    
+    return INVALID_ZM_EVENT;
+}
+
+/*____________________________________________________________________________*/
+
+AssertEventNameNotExists(const String:name[])
+{
+    if (EventExists(name))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Event name is already in use: %s", name);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertEventNameNotEmpty(const String:name[])
+{
+    if (strlen(name) == 0)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Event name is empty.");
+    }
+}
