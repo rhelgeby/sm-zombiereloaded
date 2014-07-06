@@ -30,8 +30,8 @@ InitAPI()
     
     CreateNative("ZM_CreateEvent", API_CreateEvent);
     CreateNative("ZM_DeleteEvent", API_DeleteEvent);
-    /*CreateNative("ZM_GetEventByName", API_GetEventByName);
-    CreateNative("ZM_HookEvent", API_HookEvent);
+    CreateNative("ZM_GetEventByName", API_GetEventByName);
+    /*CreateNative("ZM_HookEvent", API_HookEvent);
     CreateNative("ZM_UnhookEvent", API_UnhookEvent);
     CreateNative("ZM_HookEventsCreate", API_HookEventsCreate);
     CreateNative("ZM_HookEventsCreated", API_HookEventsCreated);*/
@@ -93,6 +93,15 @@ public API_DeleteEvent(Handle:plugin, numParams)
  * @error               Caller is not a module.
  */
 //native ZMEvent:ZM_GetEventByName(const String:eventName[]);
+public API_GetEventByName(Handle:plugin, numParams)
+{
+    new String:eventName[EVENT_STRING_LEN];
+    GetNativeString(1, eventName, sizeof(eventName));
+    
+    new ZMEvent:event = GetEventByName(eventName);
+    
+    return _:event;
+}
 
 /*____________________________________________________________________________*/
 
