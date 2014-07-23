@@ -28,10 +28,6 @@
 #include <zombie/core/modulemanager>
 #include <zombie/core/eventmanager>
 
-#include "zombiereloaded/libraries/objectlib"
-#include "zombiereloaded/eventmanager/event"
-#include "zombiereloaded/eventmanager/natives"
-
 /*____________________________________________________________________________*/
 
 #define PLUGIN_NAME         "Zombie:Reloaded Event Manager"
@@ -62,9 +58,15 @@ new Handle:EventList = INVALID_HANDLE;
 new Handle:EventNameIndex = INVALID_HANDLE;
 
 /**
- * Stores whether an event call is in progress.
+ * Reference to event being prepared (not fired yet), if any.
  */
-new bool:EventStarted = false;
+new ZMEvent:EventStarted = INVALID_ZM_EVENT;
+
+/*____________________________________________________________________________*/
+
+#include "zombiereloaded/libraries/objectlib"
+#include "zombiereloaded/eventmanager/event"
+#include "zombiereloaded/eventmanager/natives"
 
 /*____________________________________________________________________________*/
 
@@ -220,7 +222,7 @@ public Handle:StartEvent(ZMEvent:event)
     new Handle:forwardRef = GetZMEventForward(event);
     
     Call_StartForward(forwardRef);
-    EventStarted = true;
+    EventStarted = event;
     
     return forwardRef;
 }
@@ -238,7 +240,7 @@ StartSingleEvent(ZMEvent:event, ZMModule:module)
     AssertModuleCallbackValid(callback, event, module);
     
     Call_StartFunction(eventOwnerPlugin, callback);
-    EventStarted = true;
+    EventStarted = event;
 }
 
 /*____________________________________________________________________________*/
@@ -248,19 +250,19 @@ FireZMEvent(&any:result = 0)
     AssertEventStarted();
     
     // Reset before calling, in case of nested events.
-    EventStarted = false;
+    EventStarted = INVALID_ZM_EVENT;
     
     return Call_Finish(result);
 }
 
 /*____________________________________________________________________________*/
 
-CancelZMEvent()
+CancelEvent()
 {
     AssertEventStarted();
     
     Call_Cancel();
-    EventStarted = false;
+    EventStarted = INVALID_ZM_EVENT;
 }
 
 /*____________________________________________________________________________*/
@@ -307,7 +309,7 @@ AssertIsValidForward(Handle:forwardRef)
 
 AssertEventStarted()
 {
-    if (!EventStarted)
+    if (EventStarted == INVALID_ZM_EVENT)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "No event is started.");
     }
@@ -317,7 +319,7 @@ AssertEventStarted()
 
 AssertEventNotStarted()
 {
-    if (EventStarted)
+    if (EventStarted != INVALID_ZM_EVENT)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "An event is already started, but not fired or canceled.");
     }
