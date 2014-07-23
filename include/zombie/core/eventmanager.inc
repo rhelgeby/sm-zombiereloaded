@@ -252,36 +252,31 @@ native ZM_UnhookEvent(ZMEvent:event, Function:callback);
 /**
  * Starts an event call.
  *
- * This function is used to prepare the forward so that additional event
- * parameters may be pushed.
+ * Use the Call_Push* functions after this function to push event parameters.
  *
  * @param event         Event to start.
  *
- * @return              Handle to forward associated with event. Use the 
- *                      Call_Push* functions on this forward to push event
- *                      parameters.
+ * @noreturn
  * @error               Caller is not a module, not the event owner, invalid
  *                      event, or started before another event is fired.
  */
-native Handle:ZM_StartEvent(ZMEvent:event);
+native ZM_StartEvent(ZMEvent:event);
 
 /*____________________________________________________________________________*/
 
 /**
  * Starts an event call to single module.
  *
- * This function is used to prepare a function call so that additional event
- * parameters may be pushed.
+ * Use the Call_Push* functions after this function to push event parameters.
  *
  * @param event         Event to start.
  * @param module        Target module to fire event in.
  *
- * @return              Handle to dynamic function call. Use the Call_Push*
- *                      functions on this call to push event parameters.
+ * @noreturn
  * @error               Caller is not a module, not the event owner, invalid
  *                      event, or started before another event is fired.
  */
-native Handle:ZM_StartSingleEvent(ZMEvent:event, ZMModule:module)
+native ZM_StartSingleEvent(ZMEvent:event, ZMModule:module)
 
 /*____________________________________________________________________________*/
 

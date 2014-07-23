@@ -61,6 +61,11 @@ new Handle:EventList = INVALID_HANDLE;
  */
 new Handle:EventNameIndex = INVALID_HANDLE;
 
+/**
+ * Stores whether an event call is in progress.
+ */
+new bool:EventStarted = false;
+
 /*____________________________________________________________________________*/
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -182,6 +187,84 @@ ZMEvent:GetEventByName(const String:name[])
 
 /*____________________________________________________________________________*/
 
+GetHexString(any:value, String:buffer[], maxlen)
+{
+    Format(buffer, maxlen, "%x", value);
+}
+
+/*____________________________________________________________________________*/
+
+Function:GetModuleCallback(ZMEvent:event, ZMModule:module)
+{
+    new Function:callback = INVALID_FUNCTION;
+    
+    decl String:moduleIdString[16];
+    GetHexString(module, moduleIdString, sizeof(moduleIdString));
+    
+    new Handle:callbacks = GetZMEventCallbacks(event);
+    if (GetTrieValue(callbacks, moduleIdString, callback))
+    {
+        return callback;
+    }
+    
+    return INVALID_FUNCTION;
+}
+
+/*____________________________________________________________________________*/
+
+public Handle:StartEvent(ZMEvent:event)
+{
+    AssertIsValidEvent(event);
+    AssertEventNotStarted();
+    
+    new Handle:forwardRef = GetZMEventForward(event);
+    
+    Call_StartForward(forwardRef);
+    EventStarted = true;
+    
+    return forwardRef;
+}
+
+/*____________________________________________________________________________*/
+
+StartSingleEvent(ZMEvent:event, ZMModule:module)
+{
+    AssertIsValidEvent(event);
+    AssertEventNotStarted();
+    
+    new Handle:eventOwnerPlugin = ZM_GetModuleOwner(module);
+    
+    new Function:callback = GetModuleCallback(event, module);
+    AssertModuleCallbackValid(callback, event, module);
+    
+    Call_StartFunction(eventOwnerPlugin, callback);
+    EventStarted = true;
+}
+
+/*____________________________________________________________________________*/
+
+FireZMEvent(&any:result = 0)
+{
+    AssertEventStarted();
+    
+    // Reset before calling, in case of nested events.
+    EventStarted = false;
+    
+    return Call_Finish(result);
+}
+
+/*____________________________________________________________________________*/
+
+CancelZMEvent()
+{
+    AssertEventStarted();
+    
+    Call_Cancel();
+    EventStarted = false;
+}
+
+/*____________________________________________________________________________*/
+
 AssertEventNameNotExists(const String:name[])
 {
     if (EventExists(name))
@@ -217,5 +300,35 @@ AssertIsValidForward(Handle:forwardRef)
     if (forwardRef == INVALID_HANDLE)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid forward: %x", forwardRef);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertEventStarted()
+{
+    if (!EventStarted)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "No event is started.");
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertEventNotStarted()
+{
+    if (EventStarted)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "An event is already started, but not fired or canceled.");
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertModuleCallbackValid(Function:callback, ZMEvent:event, ZMModule:module)
+{
+    if (callback == INVALID_FUNCTION)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "The specified module (%x) has not hooked this event (%x).", module, event);
     }
 }
