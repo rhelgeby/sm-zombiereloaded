@@ -43,12 +43,14 @@ InitAPI()
  * Creates a new named event.
  *
  * @param eventName     Name of new event (case sensitive).
+ * @param forwardRef    Handle to private forward associated with the new event.
+ *                      ZM_DeleteEvent will close this handle by default.
  *
  * @return              Event ID.
  * @error               Caller is not a module, blank event name, or event name
  *                      already in use.
  */
-//native ZMEvent:ZM_CreateEvent(const String:eventName);
+//native ZMEvent:ZM_CreateEvent(const String:eventName[], Handle:forwardRef);
 public API_CreateEvent(Handle:plugin, numParams)
 {
     new ZMModule:module = ZM_GetModuleByPluginOrFail(plugin);
@@ -56,7 +58,9 @@ public API_CreateEvent(Handle:plugin, numParams)
     new String:name[EVENT_STRING_LEN];
     GetNativeString(1, name, sizeof(name));
     
-    new ZMEvent:event = AddZMEvent(module, name);
+    new Handle:forwardRef = GetNativeCell(2);
+    
+    new ZMEvent:event = AddZMEvent(module, name, forwardRef);
     return _:event;
 }
 
@@ -66,20 +70,23 @@ public API_CreateEvent(Handle:plugin, numParams)
  * Deletes an existing event from the event manager.
  *
  * @param event         Event to delete.
+ * @param deleteForward (Optional) Whether the associated forward should be
+ *                      deleted (closing the handle). Default is true.
  *
  * @noreturn
  * @error               Caller is not a module, not the event owner, or event
  *                      ID is invalid.
  */
-//native ZM_DeleteEvent(ZMEvent:event);
+//native ZM_DeleteEvent(ZMEvent:event, bool:deleteForward = true);
 public API_DeleteEvent(Handle:plugin, numParams)
 {
     new ZMModule:module = ZM_GetModuleByPluginOrFail(plugin);
     new ZMEvent:event = GetNativeCell(1);
+    new bool:deleteForward = GetNativeCell(2);
     
     AssertIsEventOwner(module, event);
     
-    RemoveZMEvent(event);
+    RemoveZMEvent(event, deleteForward);
 }
 
 /*____________________________________________________________________________*/

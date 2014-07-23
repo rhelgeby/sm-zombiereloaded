@@ -96,9 +96,9 @@ InitializeDataStorage()
 
 /*____________________________________________________________________________*/
 
-ZMEvent:AddZMEvent(ZMModule:owner, const String:name[])
+ZMEvent:AddZMEvent(ZMModule:owner, const String:name[], Handle:forwardRef)
 {
-    new ZMEvent:event = CreateZMEvent(owner, name);
+    new ZMEvent:event = CreateZMEvent(owner, name, forwardRef);
 
     AddEventToList(event);    
     AddEventToIndex(event);
@@ -108,7 +108,7 @@ ZMEvent:AddZMEvent(ZMModule:owner, const String:name[])
 
 /*____________________________________________________________________________*/
 
-RemoveZMEvent(ZMEvent:event)
+RemoveZMEvent(ZMEvent:event, bool:deleteForward = true)
 {
     AssertIsValidEvent(event);
     
@@ -117,7 +117,7 @@ RemoveZMEvent(ZMEvent:event)
     RemoveEventFromList(event);
     RemoveEventFromIndex(event);
     
-    DeleteZMEvent(event);
+    DeleteZMEvent(event, deleteForward);
 }
 
 /*____________________________________________________________________________*/
@@ -207,5 +207,15 @@ AssertIsEventOwner(ZMModule:module, ZMEvent:event)
     if (GetZMEventOwner(event) != module)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "This module does not own the specified event: %x", event);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+AssertIsValidForward(Handle:forwardRef)
+{
+    if (forwardRef == INVALID_HANDLE)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Invalid forward: %x", forwardRef);
     }
 }

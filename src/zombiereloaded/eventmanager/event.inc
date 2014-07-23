@@ -46,21 +46,38 @@ InitEventType()
     
     ObjLib_AddKey(EventType, "owner", ObjDataType_Cell);
     ObjLib_AddKey(EventType, "name", ObjDataType_String);
+    
+    // Handle to private forward for the event.
+    ObjLib_AddKey(EventType, "forward", ObjDataType_Handle);
+    
+    // ADT Trie with module IDs mapped to callbacks. Normally we let SourceMod
+    // store and handle callbacks. This is only used for events that are fired
+    // against specific modules only. No need to worry about lookup performance
+    // in these cases.
+    ObjLib_AddKey(EventType, "callbacks", ObjDataType_Handle);
 }
 
 /*____________________________________________________________________________*/
 
-ZMEvent:CreateZMEvent(ZMModule:owner, const String:name[])
+ZMEvent:CreateZMEvent(
+        ZMModule:owner,
+        const String:name[],
+        Handle:forwardRef)
 {
     AssertIsValidZMModule(owner);
     AssertEventNameNotEmpty(name);
     AssertEventNameNotExists(name);
+    AssertIsValidForward(forwardRef);
     
     InitEventType();
     
     new Object:event = ObjLib_CreateObject(EventType);
     ObjLib_SetCell(event, "owner", owner);
     ObjLib_SetString(event, "name", name);
+    ObjLib_SetHandle(event, "forward", forwardRef);
+    
+    new Handle:callbacks = CreateTrie();
+    ObjLib_SetHandle(event, "callbacks", callbacks);
     
     PrintToServer("Created event\"%s\".", name);
     
@@ -69,12 +86,22 @@ ZMEvent:CreateZMEvent(ZMModule:owner, const String:name[])
 
 /*____________________________________________________________________________*/
 
-DeleteZMEvent(ZMEvent:event)
+DeleteZMEvent(ZMEvent:event, bool:deleteForward = true)
 {   
     if (!ZM_IsValidEvent(event))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid event: %x", event);
     }
+    
+    new Handle:forwardRef = ObjLib_GetHandle(Object:event, "forward");
+    new Handle:callbacks = ObjLib_GetHandle(Object:event, "callbacks");
+    
+    if (deleteForward)
+    {
+        CloseHandle(forwardRef);
+    }
+    
+    CloseHandle(callbacks);
     
     ObjLib_DeleteObject(Object:event);
     
@@ -93,4 +120,18 @@ ZMModule:GetZMEventOwner(ZMEvent:event)
 GetZMEventName(ZMEvent:event, String:buffer[], maxlen)
 {
     return ObjLib_GetString(Object:event, "name", buffer, maxlen);
+}
+
+/*____________________________________________________________________________*/
+
+Handle:GetZMEventForward(ZMEvent:event)
+{
+    return ObjLib_GetHandle(Object:event, "forward");
+}
+
+/*____________________________________________________________________________*/
+
+Handle:GetZMEventCallbacks(ZMEvent:event)
+{
+    return ObjLib_GetHandle(Object:event, "callbacks");
 }

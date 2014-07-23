@@ -4,7 +4,8 @@
  *  Zombie Mod API
  *
  *  File:           eventmanager.inc
- *  Description:    Create and manage abstract events.
+ *  Description:    Create and manage abstract events. Works as a wrapper for
+ *                  private forwards so that the core can do interceptions.
  *
  *  Copyright (C) 2014  Richard Helgeby
  *
@@ -147,12 +148,14 @@ functag public ZM_OnEventsCreated();
  * Creates a new named event.
  *
  * @param eventName     Name of new event (case sensitive).
+ * @param forwardRef    Handle to private forward associated with the new event.
+ *                      ZM_DeleteEvent will close this handle by default.
  *
  * @return              Event ID.
  * @error               Caller is not a module, blank event name, or event name
  *                      already in use.
  */
-native ZMEvent:ZM_CreateEvent(const String:eventName);
+native ZMEvent:ZM_CreateEvent(const String:eventName[], Handle:forwardRef);
 
 /*____________________________________________________________________________*/
 
@@ -160,12 +163,14 @@ native ZMEvent:ZM_CreateEvent(const String:eventName);
  * Deletes an existing event from the event manager.
  *
  * @param event         Event to delete.
+ * @param deleteForward (Optional) Whether the associated forward should be
+ *                      deleted (closing the handle). Default is true.
  *
  * @noreturn
  * @error               Caller is not a module, not the event owner, or event
  *                      ID is invalid.
  */
-native ZM_DeleteEvent(ZMEvent:event);
+native ZM_DeleteEvent(ZMEvent:event, bool:deleteForward = true);
 
 /*____________________________________________________________________________*/
 
@@ -241,6 +246,66 @@ native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
  * @error               Caller is not a module, callback or event ID is invalid.
  */
 native ZM_UnhookEvent(ZMEvent:event, Function:callback);
+
+/*____________________________________________________________________________*/
+
+/**
+ * Starts an event call.
+ *
+ * This function is used to prepare the forward so that additional event
+ * parameters may be pushed.
+ *
+ * @param event         Event to start.
+ *
+ * @return              Handle to forward associated with event. Use the 
+ *                      Call_Push* functions on this forward to push event
+ *                      parameters.
+ * @error               Caller is not a module, not the event owner, invalid
+ *                      event, or started before another event is fired.
+ */
+native Handle:ZM_StartEvent(ZMEvent:event);
+
+/*____________________________________________________________________________*/
+
+/**
+ * Starts an event call to single module.
+ *
+ * This function is used to prepare a function call so that additional event
+ * parameters may be pushed.
+ *
+ * @param event         Event to start.
+ * @param module        Target module to fire event in.
+ *
+ * @return              Handle to dynamic function call. Use the Call_Push*
+ *                      functions on this call to push event parameters.
+ * @error               Caller is not a module, not the event owner, invalid
+ *                      event, or started before another event is fired.
+ */
+native Handle:ZM_StartSingleEvent(ZMEvent:event, ZMModule:module)
+
+/*____________________________________________________________________________*/
+
+/**
+ * Fires the event call.
+ *
+ * @param result        (Output) Result of the event.
+ *
+ * @return              SP_ERROR_NONE on success, any other integer on failure.
+ *                      See SP_ERROR_* constants.
+ * @error               Caller is not a module, or not the event owner.
+ */
+native ZM_FireEvent(&any:result = 0);
+
+/*____________________________________________________________________________*/
+
+/**
+ * Cancels a call to an event.
+ *
+ * @noreturn
+ * @error               Caller is not a module, or called before an event is
+ *                      started.
+ */
+native ZM_CancelEvent();
 
 /*____________________________________________________________________________*/
 
