@@ -229,8 +229,9 @@ stock bool:ZM_EventExists(const String:eventName[])
  * @param callback      Function callback to add.
  *
  * @noreturn
- * @error               Caller is not a module, not the event owner, callback or
- *                      event ID is invalid.
+ * @error               Caller is not a module, callback or event ID is invalid,
+ *                      or an event call is in progress (started, but not
+ *                      fired).
  */
 native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
 
@@ -239,11 +240,14 @@ native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
 /**
  * Removes an event hook.
  *
- * @param event         Event ID.
+ * @param module        Module where callback resides.
+ * @param event         Event to remove callback from.
  * @param callback      Callback to unhook.
  *
  * @noreturn
- * @error               Caller is not a module, callback or event ID is invalid.
+ * @error               Caller is not a module, callback or event ID is invalid,
+ *                      or an event call is in progress (started, but not
+ *                      fired).
  */
 native ZM_UnhookEvent(ZMEvent:event, Function:callback);
 
@@ -297,8 +301,8 @@ native ZM_FireEvent(&any:result = 0);
  * Cancels a call to an event.
  *
  * @noreturn
- * @error               Caller is not a module, or called before an event is
- *                      started.
+ * @error               Caller is not a module, not the event owner, or called
+ *                      before an event is started.
  */
 native ZM_CancelEvent();
 
