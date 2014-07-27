@@ -80,7 +80,7 @@ new Handle:FeatureNameIndex = INVALID_HANDLE;
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
-    PrintToServer("Loading module manager.");
+    LogMessage("Loading module manager.");
     
     if (LibraryExists(LIBRARY_ZM_MODULE_MANAGER))
     {
@@ -99,14 +99,14 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 public OnPluginStart()
 {
     InitializeDataStorage();
-    PrintToServer("Module manager loaded.");
+    LogMessage("Module manager loaded.");
 }
 
 /*____________________________________________________________________________*/
 
 public OnPluginEnd()
 {
-    PrintToServer("Module manager unloaded.");
+    LogMessage("Module manager unloaded.");
 }
 
 /*____________________________________________________________________________*/
