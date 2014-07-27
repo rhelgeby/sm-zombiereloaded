@@ -135,3 +135,27 @@ Handle:GetZMEventCallbacks(ZMEvent:event)
 {
     return ObjLib_GetHandle(Object:event, "callbacks");
 }
+
+/*____________________________________________________________________________*/
+
+AddCallbackToEvent(ZMEvent:event, Function:callback)
+{
+    new Handle:callbacks = GetZMEventCallbacks(event);
+    PushArrayCell(callbacks, callback);
+}
+
+/*____________________________________________________________________________*/
+
+bool:RemoveCallbackFromEvent(ZMEvent:event, Function:callback)
+{
+    new Handle:callbacks = GetZMEventCallbacks(ZMEvent:event);
+    new callbackIndex = FindValueInArray(callbacks, callback);
+    
+    if (callbackIndex < 0)
+    {
+        return false;
+    }
+    
+    RemoveFromArray(callbacks, callbackIndex);
+    return true;
+}

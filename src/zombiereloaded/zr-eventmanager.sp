@@ -267,6 +267,42 @@ CancelEvent()
 
 /*____________________________________________________________________________*/
 
+HookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
+{
+    AssertIsValidZMModule(module);
+    AssertIsValidEvent(event);
+    AssertIsValidCallback(callback);
+    
+    new Handle:ownerPlugin = ZM_GetModuleOwner(module);
+    new Handle:forwardRef = GetZMEventForward(event);
+    
+    if (!AddToForward(forwardRef, ownerPlugin, callback))
+    {
+        ThrowForwardUpdateError();
+    }
+    AddCallbackToEvent(event, callback);
+}
+
+/*____________________________________________________________________________*/
+
+UnhookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
+{
+    AssertIsValidZMModule(module);
+    AssertIsValidEvent(event);
+    AssertIsValidCallback(callback);
+    
+    new Handle:ownerPlugin = ZM_GetModuleOwner(module);
+    new Handle:forwardRef = GetZMEventForward(event);
+    
+    if (!RemoveFromForward(forwardRef, ownerPlugin, callback))
+    {
+        ThrowForwardUpdateError();
+    }
+    RemoveCallbackFromEvent(event, callback);
+}
+
+/*____________________________________________________________________________*/
+
 AssertEventNameNotExists(const String:name[])
 {
     if (EventExists(name))
@@ -333,4 +369,21 @@ AssertModuleCallbackValid(Function:callback, ZMEvent:event, ZMModule:module)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "The specified module (%x) has not hooked this event (%x).", module, event);
     }
+}
+
+/*____________________________________________________________________________*/
+
+AssertIsValidCallback(Function:callback)
+{
+    if (callback == INVALID_FUNCTION)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Invalid callback: %x", callback);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+ThrowForwardUpdateError()
+{
+    ThrowNativeError(SP_ERROR_ABORTED, "Failed to update callback list. This can not happen while an event call is started, but not fired.");
 }

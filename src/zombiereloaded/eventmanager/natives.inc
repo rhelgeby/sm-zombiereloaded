@@ -31,8 +31,8 @@ InitAPI()
     CreateNative("ZM_CreateEvent", API_CreateEvent);
     CreateNative("ZM_DeleteEvent", API_DeleteEvent);
     CreateNative("ZM_GetEventByName", API_GetEventByName);
-    //CreateNative("ZM_HookEvent", API_HookEvent);
-    //CreateNative("ZM_UnhookEvent", API_UnhookEvent);
+    CreateNative("ZM_HookEvent", API_HookEvent);
+    CreateNative("ZM_UnhookEvent", API_UnhookEvent);
     CreateNative("ZM_StartEvent", API_StartEvent);
     CreateNative("ZM_StartSingleEvent", API_StartSingleEvent);
     CreateNative("ZM_FireEvent", API_FireEvent);
@@ -128,23 +128,43 @@ public API_GetEventByName(Handle:plugin, numParams)
  * @param callback      Function callback to add.
  *
  * @noreturn
- * @error               Caller is not a module, not the event owner, callback or
- *                      event ID is invalid.
+ * @error               Caller is not a module, callback or event ID is invalid,
+ *                      or an event call is in progress (started, but not
+ *                      fired).
  */
 //native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
+public API_HookEvent(Handle:plugin, numParams)
+{
+    new ZMModule:module = GetNativeCell(1);
+    new ZMEvent:event = GetNativeCell(2);
+    new Function:callback = GetNativeCell(3);
+    
+    HookZMEvent(module, event, callback);
+}
 
 /*____________________________________________________________________________*/
 
 /**
  * Removes an event hook.
  *
- * @param event         Event ID.
+ * @param module        Module where callback resides.
+ * @param event         Event to remove callback from.
  * @param callback      Callback to unhook.
  *
  * @noreturn
- * @error               Caller is not a module, callback or event ID is invalid.
+ * @error               Caller is not a module, callback or event ID is invalid,
+ *                      or an event call is in progress (started, but not
+ *                      fired).
  */
-//native ZM_UnhookEvent(ZMEvent:event, Function:callback);
+//native ZM_UnhookEvent(ZMModule:module, ZMEvent:event, Function:callback);
+public API_UnhookEvent(Handle:plugin, numParams)
+{
+    new ZMModule:module = GetNativeCell(1);
+    new ZMEvent:event = GetNativeCell(2);
+    new Function:callback = GetNativeCell(3);
+    
+    UnhookZMEvent(module, event, callback);
+}
 
 /*____________________________________________________________________________*/
 
