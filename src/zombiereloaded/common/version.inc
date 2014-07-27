@@ -1,0 +1,5 @@
+#define ZOMBIERELOADED_VERSION      "4.0.0"
+#define ZOMBIERELOADED_AUTHORS      "Greyscale, Richard Helgeby"
+#define ZOMBIERELOADED_URL          "https://github.com/rhelgeby/sm-zombiereloaded"
+#define ZOMBIERELOADED_COPYRIGHT    "Copyright (C) 2009-2014  Greyscale, Richard Helgeby"
+#define ZOMBIERELOADED_LICENSE      "GNU GPL, Version 3"

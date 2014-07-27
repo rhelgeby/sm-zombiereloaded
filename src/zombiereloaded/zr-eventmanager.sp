@@ -28,21 +28,20 @@
 #include <zombie/core/modulemanager>
 #include <zombie/core/eventmanager>
 
+#include "zombiereloaded/common/version"
+
 /*____________________________________________________________________________*/
 
 #define PLUGIN_NAME         "Zombie:Reloaded Event Manager"
-#define PLUGIN_AUTHOR       "Richard Helgeby"
 #define PLUGIN_DESCRIPTION  "Implements the Event Manager API."
-#define PLUGIN_VERSION      "1.0.0"
-#define PLUGIN_URL          "https://github.com/rhelgeby/sm-zombiereloaded"
 
 public Plugin:myinfo =
 {
     name = PLUGIN_NAME,
-    author = PLUGIN_AUTHOR,
+    author = ZOMBIERELOADED_AUTHORS,
     description = PLUGIN_DESCRIPTION,
-    version = PLUGIN_VERSION,
-    url = PLUGIN_URL
+    version = ZOMBIERELOADED_VERSION,
+    url = ZOMBIERELOADED_URL
 };
 
 /*____________________________________________________________________________*/
