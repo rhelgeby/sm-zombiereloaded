@@ -83,7 +83,15 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
     PrintToServer("Loading module manager.");
     
+    if (LibraryExists(LIBRARY_ZM_MODULE_MANAGER))
+    {
+        Format(error, err_max, "Another ZM module manager is already loaded.");
+        return APLRes_Failure;
+    }
+    
     InitAPI();
+    RegPluginLibrary(LIBRARY_ZM_MODULE_MANAGER);
+    
     return APLRes_Success;
 }
 
