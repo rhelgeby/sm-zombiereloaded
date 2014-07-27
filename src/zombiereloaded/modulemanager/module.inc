@@ -74,7 +74,7 @@ ZMModule:CreateModule(Handle:plugin, const String:name[])
     ObjLib_SetHandle(module, "plugin", plugin);
     ObjLib_SetString(module, "name", name);
     
-    PrintToServer("Created module \"%s\".", name);
+    LogMessage("Created module \"%s\": %x", name, module);
     
     return ZMModule:module;
 }
@@ -90,7 +90,7 @@ DeleteModule(ZMModule:module)
     
     ObjLib_DeleteObject(Object:module);
     
-    PrintToServer("Deleted module 0x%X.", module);
+    LogMessage("Deleted module: %x.", module);
 }
 
 /*____________________________________________________________________________*/
