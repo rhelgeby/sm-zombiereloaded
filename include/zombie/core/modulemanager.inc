@@ -219,7 +219,7 @@ native ZMModule:ZM_GetModuleByPlugin(Handle:plugin);
  *
  * @param plugin        Handle to plugin representing a module.
  *
- * @return              Module ID.
+ * @return              Module ID if successful, INVALID_ZM_MODULE otherwise.
  * @error               No module registered to plugin.
  */
 stock ZMModule:ZM_GetModuleByPluginOrFail(Handle:plugin)
@@ -228,6 +228,7 @@ stock ZMModule:ZM_GetModuleByPluginOrFail(Handle:plugin)
     if (!ZM_IsValidModule(module))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "No module is registered to this plugin.");
+        return INVALID_ZM_MODULE;
     }
     
     return module;
@@ -389,10 +390,13 @@ native ZMEvent:ZM_HookFeatureRemove(ZM_OnFeatureRemove:callback);
  * @noreturn
  * @error               Invalid module.
  */
-stock AssertIsValidZMModule(ZMModule:module)
+stock bool:AssertIsValidZMModule(ZMModule:module)
 {
     if (!ZM_IsValidModule(module))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid module: %x", module);
+        return false;
     }
+    
+    return true;
 }

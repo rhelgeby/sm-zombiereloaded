@@ -396,26 +396,48 @@ Handle:GetModuleFeatures(ZMModule:module)
 /*____________________________________________________________________________*/
 
 /**
- * Throws a native error if the plugin has no module registered to it.
+ * Throws a native error if the plugin already has a module registered to it.
  */
-AssertPluginHasNoModule(Handle:plugin)
+bool:AssertPluginHasNoModule(Handle:plugin)
 {
     new ZMModule:module = GetModuleByPlugin(plugin);
-    if (!IsValidModule(module))
+    if (IsValidModule(module))
     {
-        ThrowNativeError(SP_ERROR_ABORTED, "No module is registered to this plugin.");
+        ThrowNativeError(SP_ERROR_ABORTED, "A module is already registered to this plugin.");
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertModuleNameNotExists(const String:moduleName[])
+/**
+ * Throws a native error if the plugin already has a module registered to it.
+ */
+bool:AssertPluginHasModule(ZMModule:module)
+{
+    if (!IsValidModule(module))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "No module is registered to this plugin.");
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertModuleNameNotExists(const String:moduleName[])
 {
     new ZMModule:module = GetModuleByName(moduleName);
     if (IsValidModule(module))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Module name is already in use: %s", moduleName);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
@@ -423,9 +445,10 @@ AssertModuleNameNotExists(const String:moduleName[])
 ZMModule:GetModuleByPluginOrFail(Handle:plugin)
 {
     new ZMModule:module = GetModuleByPlugin(plugin);
-    if (ZM_IsValidModule(module))
+    if (!ZM_IsValidModule(module))
     {
-        ThrowNativeError(SP_ERROR_ABORTED, "A module is already registered to this plugin.");
+        ThrowNativeError(SP_ERROR_ABORTED, "No module is registered to this plugin.");
+        return INVALID_ZM_MODULE;
     }
     
     return module;
@@ -433,31 +456,40 @@ ZMModule:GetModuleByPluginOrFail(Handle:plugin)
 
 /*____________________________________________________________________________*/
 
-AssertFeatureNameNotExists(const String:name[])
+bool:AssertFeatureNameNotExists(const String:name[])
 {
     new ZMFeature:feature = GetFeatureByName(name);
     if (IsValidFeature(feature))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Feature name is already in use: %s", name);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertFeatureExists(ZMFeature:feature)
+bool:AssertFeatureExists(ZMFeature:feature)
 {
     if (!IsValidFeature(feature))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid feature: %x", feature);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertIsFeatureOwner(Handle:plugin, ZMFeature:feature)
+bool:AssertIsFeatureOwner(Handle:plugin, ZMFeature:feature)
 {
     if (!IsFeatureOwner(plugin, feature))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "This plugin does not own the specified feature: %x", feature);
+        return false;
     }
+    
+    return true;
 }

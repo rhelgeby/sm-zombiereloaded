@@ -85,7 +85,7 @@ DeleteModule(ZMModule:module)
 {   
     if (module == INVALID_ZM_MODULE)
     {
-        ThrowNativeError(SP_ERROR_ABORTED, "Invalid module.");
+        ThrowError("Invalid module.");
     }
     
     ObjLib_DeleteObject(Object:module);

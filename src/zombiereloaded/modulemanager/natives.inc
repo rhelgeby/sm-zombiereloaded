@@ -69,8 +69,14 @@ public API_CreateModule(Handle:plugin, numParams)
     new String:name[MODULE_STRING_LEN];
     GetNativeString(1, name, sizeof(name));
     
-    AssertPluginHasNoModule(plugin);
-    AssertModuleNameNotExists(name);
+    if (!AssertPluginHasNoModule(plugin))
+    {
+        return 0;
+    }
+    if (!AssertModuleNameNotExists(name))
+    {
+        return 0;
+    }
     
     new ZMModule:module = AddModule(plugin, name);
     return _:module;
@@ -89,7 +95,12 @@ public API_CreateModule(Handle:plugin, numParams)
 //native ZM_DeleteModule();
 public API_DeleteModule(Handle:plugin, numParams)
 {
-    new ZMModule:module = GetModuleByPluginOrFail(plugin);
+    new ZMModule:module = GetModuleByPlugin(plugin);
+    if (!AssertPluginHasModule(module))
+    {
+        return;
+    }
+    
     RemoveModule(module);
 }
 
