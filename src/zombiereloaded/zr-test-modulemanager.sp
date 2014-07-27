@@ -46,10 +46,11 @@ public Plugin:myinfo =
 /*____________________________________________________________________________*/
 
 new ModuleManagerLoaded = false;
+new ZMModule:TestModule = INVALID_ZM_MODULE;
 
 /*____________________________________________________________________________*/
 
-public OnPluginStart()
+public OnAllPluginsLoaded()
 {
     if (LibraryExists(LIBRARY_ZM_MODULE_MANAGER))
     {
@@ -87,6 +88,9 @@ OnModuleManagerAdded()
     }
     
     ModuleManagerLoaded = true;
+    LogMessage("Module manager available.");
+    
+    InitializeModule();
 }
 
 /*____________________________________________________________________________*/
@@ -99,4 +103,25 @@ OnModuleManagerRemoved()
     }
     
     ModuleManagerLoaded = false;
+    LogMessage("Module manager removed.");
+    
+    DeleteModule();
+}
+
+/*____________________________________________________________________________*/
+
+InitializeModule()
+{
+    TestModule = ZM_CreateModule("zr_test_modulemanager");
+    LogMessage("Registered module: %x", TestModule);
+}
+
+/*____________________________________________________________________________*/
+
+DeleteModule()
+{
+    ZM_DeleteModule();
+    TestModule = INVALID_ZM_MODULE;
+    
+    LogMessage("Deleted module.");
 }
