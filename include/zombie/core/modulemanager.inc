@@ -138,7 +138,7 @@ functag public OnFeatureRemove(ZMFeature:feature);
  */
 enum ZMModule
 {
-    INVALID_ZM_MODULE = -1
+    INVALID_ZM_MODULE
 }
 
 /*____________________________________________________________________________*/
@@ -148,7 +148,7 @@ enum ZMModule
  */
 enum ZMFeature
 {
-    INVALID_ZM_FEATURE = -1
+    INVALID_ZM_FEATURE
 }
 
 /*____________________________________________________________________________*/
