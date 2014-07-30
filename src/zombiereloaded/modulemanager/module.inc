@@ -88,9 +88,9 @@ DeleteModule(ZMModule:module)
         ThrowError("Invalid module.");
     }
     
-    ObjLib_DeleteObject(Object:module);
+    ObjLib_DeleteObject(Object:module, false);
     
-    LogMessage("Deleted module: %x.", module);
+    LogMessage("Deleted module: %x", module);
 }
 
 /*____________________________________________________________________________*/
