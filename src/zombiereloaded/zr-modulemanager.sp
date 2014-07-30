@@ -258,6 +258,7 @@ AddModuleToIndex(ZMModule:module)
     
     SetTrieValue(ModuleNameIndex, name, module);
     SetTrieValue(ModulePluginIndex, pluginID, module);
+    LogMessage("Adding module to index. pluginID=%s | module=%x", pluginID, module);
 }
 
 /*____________________________________________________________________________*/

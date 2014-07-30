@@ -96,6 +96,8 @@ public API_CreateModule(Handle:plugin, numParams)
 public API_DeleteModule(Handle:plugin, numParams)
 {
     new ZMModule:module = GetModuleByPlugin(plugin);
+    LogMessage("API_DeleteModule: module=%x | plugin=%x", module, plugin);
+    
     if (!AssertPluginHasModule(module))
     {
         return;
