@@ -50,6 +50,13 @@ new ZMModule:TestModule = INVALID_ZM_MODULE;
 
 /*____________________________________________________________________________*/
 
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+    ZM_SetModuleManagerOptional();
+}
+
+/*____________________________________________________________________________*/
+
 public OnAllPluginsLoaded()
 {
     if (LibraryExists(LIBRARY_ZM_MODULE_MANAGER))

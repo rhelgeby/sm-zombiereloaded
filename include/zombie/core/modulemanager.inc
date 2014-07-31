@@ -400,3 +400,25 @@ stock bool:AssertIsValidZMModule(ZMModule:module)
     
     return true;
 }
+
+/*____________________________________________________________________________*/
+
+/**
+ * Marks all natives in the module manager as optional.
+ */
+stock ZM_SetModuleManagerOptional()
+{
+    MarkNativeAsOptional("ZM_CreateModule");
+    MarkNativeAsOptional("ZM_DeleteModule");
+    MarkNativeAsOptional("ZM_GetModuleByPlugin");
+    MarkNativeAsOptional("ZM_GetModuleOwner");
+    MarkNativeAsOptional("ZM_GetModuleByName");
+    MarkNativeAsOptional("ZM_GetModuleDescription");
+    MarkNativeAsOptional("ZM_SetModuleDescription");
+    MarkNativeAsOptional("ZM_CreateFeature");
+    MarkNativeAsOptional("ZM_DeleteFeature");
+    MarkNativeAsOptional("ZM_GetFeature");
+    MarkNativeAsOptional("ZM_GetFeatureOwner");
+    MarkNativeAsOptional("ZM_HookFeatureAdded");
+    MarkNativeAsOptional("ZM_HookFeatureRemoved");
+}
