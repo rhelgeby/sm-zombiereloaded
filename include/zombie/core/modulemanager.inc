@@ -71,10 +71,9 @@ dependencies on specific features, regardless which module that implements it.
 The implementation may use SourceMod's own feature status natives as long as the
 module manager API specification is followed.
 
-Unique module ID:
+Dynamic module ID:
 If a module is reloaded, it must re-register itself as a module and will get
-another module ID. The old module ID will not be used again, until the module
-manager is reloaded.
+another module ID.
 
 When the module manager is unloaded, all module IDs are considered invalid.
 All modules should to listen for availability status of the module manager by

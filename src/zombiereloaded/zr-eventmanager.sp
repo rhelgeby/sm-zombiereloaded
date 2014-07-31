@@ -74,6 +74,8 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
     PrintToServer("Loading event manager.");
     
     InitAPI();
+    RegPluginLibrary(LIBRARY_ZM_EVENT_MANAGER);
+    
     return APLRes_Success;
 }
 

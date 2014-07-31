@@ -112,6 +112,14 @@ each plugin.
 /*____________________________________________________________________________*/
 
 /**
+ * Predefined event manager library name to be used with OnLibraryAdded,
+ * OnLibraryRemoved, and LibraryExists.
+ */
+#define LIBRARY_ZM_EVENT_MANAGER "zm_event_manager"
+
+/*____________________________________________________________________________*/
+
+/**
  * Event ID.
  */
 enum ZMEvent
