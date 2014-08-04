@@ -26,6 +26,7 @@
 
 #include <sourcemod>
 #include <zombie/core/modulemanager>
+#include <zombie/core/bootstrap/boot-modulemanager>
 
 #include "zombiereloaded/common/version"
 
@@ -45,14 +46,13 @@ public Plugin:myinfo =
 
 /*____________________________________________________________________________*/
 
-new ModuleManagerLoaded = false;
 new ZMModule:TestModule = INVALID_ZM_MODULE;
 
 /*____________________________________________________________________________*/
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
-    ZM_SetModuleManagerOptional();
+    ZM_ModuleMgr_AskPluginLoad2(myself, late, error, err_max);
     return APLRes_Success;
 }
 
@@ -60,72 +60,33 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 
 public OnAllPluginsLoaded()
 {
-    if (LibraryExists(LIBRARY_ZM_MODULE_MANAGER))
-    {
-        OnModuleManagerAdded();
-    }
+    ZM_ModuleMgr_OnAllPluginsLoaded();
 }
 
 /*____________________________________________________________________________*/
 
 public OnPluginEnd()
 {
-    OnModuleManagerRemoved();
+    ZM_ModuleMgr_OnPluginEnd();
 }
 
 /*____________________________________________________________________________*/
 
 public OnLibraryAdded(const String:name[])
 {
-    if (StrEqual(name, LIBRARY_ZM_MODULE_MANAGER))
-    {
-        OnModuleManagerAdded();
-    }
+    ZM_ModuleMgr_OnLibraryAdded(name);
 }
 
 /*____________________________________________________________________________*/
 
 public OnLibraryRemoved(const String:name[])
 {
-    if (StrEqual(name, LIBRARY_ZM_MODULE_MANAGER))
-    {
-        OnModuleManagerRemoved();
-    }
+    ZM_ModuleMgr_OnLibraryRemoved(name);
 }
 
 /*____________________________________________________________________________*/
 
-OnModuleManagerAdded()
-{
-    if (ModuleManagerLoaded)
-    {
-        return;
-    }
-    
-    ModuleManagerLoaded = true;
-    LogMessage("Module manager available.");
-    
-    InitializeModule();
-}
-
-/*____________________________________________________________________________*/
-
-OnModuleManagerRemoved()
-{
-    if (!ModuleManagerLoaded)
-    {
-        return;
-    }
-    
-    ModuleManagerLoaded = false;
-    LogMessage("Module manager removed.");
-    
-    DeleteModule();
-}
-
-/*____________________________________________________________________________*/
-
-InitializeModule()
+LoadModule()
 {
     TestModule = ZM_CreateModule("zr_test_modulemanager");
     LogMessage("Registered module: %x", TestModule);
@@ -133,7 +94,7 @@ InitializeModule()
 
 /*____________________________________________________________________________*/
 
-DeleteModule()
+UnloadModule()
 {
     ZM_DeleteModule();
     TestModule = INVALID_ZM_MODULE;
