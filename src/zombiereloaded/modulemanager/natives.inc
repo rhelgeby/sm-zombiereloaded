@@ -138,9 +138,9 @@ public API_GetModuleOwner(Handle:plugin, numParams)
 {
     new ZMModule:module = GetNativeCell(1);
     
-    if (!IsValidModule(module))
+    if (!AssertIsValidZMModule(module))
     {
-        ThrowNativeError(SP_ERROR_ABORTED, "Invalid module ID.");
+        return 0;
     }
     
     return _:GetModulePlugin(module);
@@ -180,9 +180,9 @@ public API_GetModuleDescription(Handle:plugin, numParams)
 {
     new ZMModule:module = GetNativeCell(1);
     
-    if (!IsValidModule(module))
+    if (!AssertIsValidZMModule(module))
     {
-        ThrowNativeError(SP_ERROR_ABORTED, "Invalid module ID.");
+        return 0;
     }
     
     new String:buffer[MODULE_STRING_LEN];
@@ -240,7 +240,10 @@ public API_CreateFeature(Handle:plugin, numParams)
     new String:identifier[MODULE_STRING_LEN];
     GetNativeString(1, identifier, sizeof(identifier));
     
-    AssertFeatureNameNotExists(identifier);
+    if (!AssertFeatureNameNotExists(identifier))
+    {
+        return 0;
+    }
     
     new ZMModule:module = GetModuleByPluginOrFail(plugin);
     new ZMFeature:feature = AddFeature(module, identifier);
