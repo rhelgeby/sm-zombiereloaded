@@ -382,11 +382,11 @@ native ZMEvent:ZM_HookFeatureRemove(ZM_OnFeatureRemove:callback);
 /*____________________________________________________________________________*/
 
 /**
- * Throws an error if the specified module is invalid.
+ * Throws a native error if the specified module is invalid.
  *
  * @param module        Module to validate.
  *
- * @noreturn
+ * @return              True if valid, false otherwise.
  * @error               Invalid module.
  */
 stock bool:AssertIsValidZMModule(ZMModule:module)
@@ -394,6 +394,27 @@ stock bool:AssertIsValidZMModule(ZMModule:module)
     if (!ZM_IsValidModule(module))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid module: %x", module);
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+/**
+ * Throws a native error if the plugin already has a module registered to it.
+ *
+ * @param module        Module to validate.
+ *
+ * @return              True if valid, false otherwise.
+ * @error               Invalid module.
+ */
+stock bool:AssertPluginHasZMModule(ZMModule:module)
+{
+    if (!ZM_IsValidModule(module))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "No module is registered to this plugin.");
         return false;
     }
     

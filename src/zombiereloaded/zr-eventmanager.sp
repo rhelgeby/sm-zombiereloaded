@@ -91,7 +91,10 @@ ZMEvent:AddZMEvent(ZMModule:owner, const String:name[], Handle:forwardRef)
 
 RemoveZMEvent(ZMEvent:event, bool:deleteForward = true)
 {
-    AssertIsValidEvent(event);
+    if (!AssertIsValidZMEvent(event))
+    {
+        return;
+    }
     
     RemoveEventFromList(event);
     RemoveEventFromIndex(event);
@@ -188,23 +191,27 @@ Function:GetModuleCallback(ZMEvent:event, ZMModule:module)
 
 public Handle:StartEvent(ZMEvent:event)
 {
-    AssertIsValidEvent(event);
-    AssertEventNotStarted();
+    if (!AssertIsValidZMEvent(event)
+        || !AssertEventNotStarted())
+    {
+        return;
+    }
     
     new Handle:forwardRef = GetZMEventForward(event);
     
     Call_StartForward(forwardRef);
     EventStarted = event;
-    
-    return forwardRef;
 }
 
 /*____________________________________________________________________________*/
 
 StartSingleEvent(ZMEvent:event, ZMModule:module)
 {
-    AssertIsValidEvent(event);
-    AssertEventNotStarted();
+    if (!AssertIsValidZMEvent(event)
+        || !AssertEventNotStarted())
+    {
+        return;
+    }
     
     new Handle:eventOwnerPlugin = ZM_GetModuleOwner(module);
     
@@ -219,7 +226,10 @@ StartSingleEvent(ZMEvent:event, ZMModule:module)
 
 FireZMEvent(&any:result = 0)
 {
-    AssertEventStarted();
+    if (!AssertEventStarted())
+    {
+        return 0;
+    }
     
     // Reset before calling, in case of nested events.
     EventStarted = INVALID_ZM_EVENT;
@@ -231,7 +241,10 @@ FireZMEvent(&any:result = 0)
 
 CancelEvent()
 {
-    AssertEventStarted();
+    if (!AssertEventStarted())
+    {
+        return;
+    }
     
     Call_Cancel();
     EventStarted = INVALID_ZM_EVENT;
@@ -241,10 +254,12 @@ CancelEvent()
 
 HookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
 {
-    AssertIsValidZMModule(module);
-    AssertIsValidEvent(event);
-    AssertIsValidCallback(callback);
-    
+    if (!AssertIsValidZMModule(module)
+        || !AssertIsValidZMEvent(event)
+        || !AssertIsValidCallback(callback))
+    {
+        return;
+    }
     new Handle:ownerPlugin = ZM_GetModuleOwner(module);
     new Handle:forwardRef = GetZMEventForward(event);
     
@@ -259,9 +274,12 @@ HookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
 
 UnhookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
 {
-    AssertIsValidZMModule(module);
-    AssertIsValidEvent(event);
-    AssertIsValidCallback(callback);
+    if (!AssertIsValidZMModule(module)
+        || !AssertIsValidZMEvent(event)
+        || !AssertIsValidCallback(callback))
+    {
+        return;
+    }
     
     new Handle:ownerPlugin = ZM_GetModuleOwner(module);
     new Handle:forwardRef = GetZMEventForward(event);
@@ -275,82 +293,106 @@ UnhookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
 
 /*____________________________________________________________________________*/
 
-AssertEventNameNotExists(const String:name[])
+bool:AssertEventNameNotExists(const String:name[])
 {
     if (EventExists(name))
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Event name is already in use: %s", name);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertEventNameNotEmpty(const String:name[])
+bool:AssertEventNameNotEmpty(const String:name[])
 {
     if (strlen(name) == 0)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Event name is empty.");
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertIsEventOwner(ZMModule:module, ZMEvent:event)
+bool:AssertIsEventOwner(ZMModule:module, ZMEvent:event)
 {
     if (GetZMEventOwner(event) != module)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "This module does not own the specified event: %x", event);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertIsValidForward(Handle:forwardRef)
+bool:AssertIsValidForward(Handle:forwardRef)
 {
     if (forwardRef == INVALID_HANDLE)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid forward: %x", forwardRef);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertEventStarted()
+bool:AssertEventStarted()
 {
     if (EventStarted == INVALID_ZM_EVENT)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "No event is started.");
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertEventNotStarted()
+bool:AssertEventNotStarted()
 {
     if (EventStarted != INVALID_ZM_EVENT)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "An event is already started, but not fired or canceled.");
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertModuleCallbackValid(Function:callback, ZMEvent:event, ZMModule:module)
+bool:AssertModuleCallbackValid(Function:callback, ZMEvent:event, ZMModule:module)
 {
     if (callback == INVALID_FUNCTION)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "The specified module (%x) has not hooked this event (%x).", module, event);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
 
-AssertIsValidCallback(Function:callback)
+bool:AssertIsValidCallback(Function:callback)
 {
     if (callback == INVALID_FUNCTION)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid callback: %x", callback);
+        return false;
     }
+    
+    return true;
 }
 
 /*____________________________________________________________________________*/
@@ -358,4 +400,15 @@ AssertIsValidCallback(Function:callback)
 ThrowForwardUpdateError()
 {
     ThrowNativeError(SP_ERROR_ABORTED, "Failed to update callback list. This can not happen while an event call is started, but not fired.");
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertEventManagerReady()
+{
+    if (!EventManagerReady)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "The event manager is not ready.");
+        return false;
+    }
 }

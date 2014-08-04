@@ -413,22 +413,6 @@ bool:AssertPluginHasNoModule(Handle:plugin)
 
 /*____________________________________________________________________________*/
 
-/**
- * Throws a native error if the plugin already has a module registered to it.
- */
-bool:AssertPluginHasModule(ZMModule:module)
-{
-    if (!IsValidModule(module))
-    {
-        ThrowNativeError(SP_ERROR_ABORTED, "No module is registered to this plugin.");
-        return false;
-    }
-    
-    return true;
-}
-
-/*____________________________________________________________________________*/
-
 bool:AssertModuleNameNotExists(const String:moduleName[])
 {
     new ZMModule:module = GetModuleByName(moduleName);

@@ -69,11 +69,8 @@ public API_CreateModule(Handle:plugin, numParams)
     new String:name[MODULE_STRING_LEN];
     GetNativeString(1, name, sizeof(name));
     
-    if (!AssertPluginHasNoModule(plugin))
-    {
-        return 0;
-    }
-    if (!AssertModuleNameNotExists(name))
+    if (!AssertPluginHasNoModule(plugin)
+        || !AssertModuleNameNotExists(name))
     {
         return 0;
     }
@@ -98,7 +95,7 @@ public API_DeleteModule(Handle:plugin, numParams)
     new ZMModule:module = GetModuleByPlugin(plugin);
     LogMessage("API_DeleteModule: module=%x | plugin=%x", module, plugin);
     
-    if (!AssertPluginHasModule(module))
+    if (!AssertPluginHasZMModule(module))
     {
         return;
     }
@@ -210,7 +207,11 @@ public API_GetModuleDescription(Handle:plugin, numParams)
 //native ZM_SetModuleDescription(const String:description[]);
 public API_SetModuleDescription(Handle:plugin, numParams)
 {
-    new ZMModule:module = GetModuleByPluginOrFail(plugin);
+    new ZMModule:module = GetModuleByPlugin(plugin);
+    if (!AssertPluginHasZMModule(module))
+    {
+        return;
+    }
     
     new String:description[MODULE_STRING_LEN];
     GetNativeString(1, description, sizeof(description));
@@ -268,8 +269,11 @@ public API_DeleteFeature(Handle:plugin, numParams)
 {
     new ZMFeature:feature = GetNativeCell(1);
     
-    AssertFeatureExists(feature);
-    AssertIsFeatureOwner(plugin, feature);
+    if (!AssertFeatureExists(feature)
+        || !AssertIsFeatureOwner(plugin, feature))
+    {
+        return;
+    }
     
     RemoveFeature(feature);
 }
@@ -307,7 +311,10 @@ public API_GetFeature(Handle:plugin, numParams)
 public API_GetFeatureOwner(Handle:plugin, numParams)
 {
     new ZMFeature:feature = ZMFeature:GetNativeCell(1);
-    AssertFeatureExists(feature);
+    if (!AssertFeatureExists(feature))
+    {
+        return 0;
+    }
     
     new ZMModule:featureOwner = GetFeatureOwner(feature);
     return _:featureOwner;
