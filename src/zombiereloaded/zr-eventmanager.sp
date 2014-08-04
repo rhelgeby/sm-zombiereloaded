@@ -28,6 +28,8 @@
 #include <zombie/core/modulemanager>
 #include <zombie/core/eventmanager>
 
+#include <zombie/core/bootstrap/boot-modulemanager>
+
 #include "zombiereloaded/common/version"
 
 /*____________________________________________________________________________*/
@@ -61,46 +63,17 @@ new Handle:EventNameIndex = INVALID_HANDLE;
  */
 new ZMEvent:EventStarted = INVALID_ZM_EVENT;
 
+/**
+ * Stores whether the event manager is ready to handle natives.
+ */
+new bool:EventManagerReady = false;
+
 /*____________________________________________________________________________*/
 
 #include "zombiereloaded/libraries/objectlib"
+#include "zombiereloaded/eventmanager/boot"
 #include "zombiereloaded/eventmanager/event"
 #include "zombiereloaded/eventmanager/natives"
-
-/*____________________________________________________________________________*/
-
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-{
-    PrintToServer("Loading event manager.");
-    
-    InitAPI();
-    RegPluginLibrary(LIBRARY_ZM_EVENT_MANAGER);
-    
-    return APLRes_Success;
-}
-
-/*____________________________________________________________________________*/
-
-public OnPluginStart()
-{
-    InitializeDataStorage();
-    PrintToServer("Event manager loaded.");
-}
-
-/*____________________________________________________________________________*/
-
-InitializeDataStorage()
-{
-    if (EventList == INVALID_HANDLE)
-    {
-        EventList = CreateArray();
-    }
-    
-    if (EventNameIndex == INVALID_HANDLE)
-    {
-        EventNameIndex = CreateArray();
-    }
-}
 
 /*____________________________________________________________________________*/
 
@@ -119,8 +92,6 @@ ZMEvent:AddZMEvent(ZMModule:owner, const String:name[], Handle:forwardRef)
 RemoveZMEvent(ZMEvent:event, bool:deleteForward = true)
 {
     AssertIsValidEvent(event);
-    
-    // TODO: Unhook event callbacks.
     
     RemoveEventFromList(event);
     RemoveEventFromIndex(event);
