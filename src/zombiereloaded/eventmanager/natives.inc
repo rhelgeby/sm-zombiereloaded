@@ -53,13 +53,19 @@ InitAPI()
  *                      ZM_DeleteEvent will close this handle by default.
  *
  * @return              Event ID.
- * @error               - Caller is not a module
+ * @error               - Event manager is not ready
+ *                      - Caller is not a module
  *                      - Blank event name
  *                      - Event name already in use
  */
 //native ZMEvent:ZM_CreateEvent(const String:eventName[], Handle:forwardRef);
 public API_CreateEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return 0;
+    }
+    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -93,6 +99,11 @@ public API_CreateEvent(Handle:plugin, numParams)
 //native ZM_DeleteEvent(ZMEvent:event, bool:deleteForward = true);
 public API_DeleteEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return;
+    }
+    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -124,6 +135,11 @@ public API_DeleteEvent(Handle:plugin, numParams)
 //native ZMEvent:ZM_GetEventByName(const String:eventName[]);
 public API_GetEventByName(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return 0;
+    }
+    
     new String:eventName[EVENT_STRING_LEN];
     GetNativeString(1, eventName, sizeof(eventName));
     
@@ -155,6 +171,11 @@ public API_GetEventByName(Handle:plugin, numParams)
 //native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
 public API_HookEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return;
+    }
+    
     new ZMModule:module = GetNativeCell(1);
     new ZMEvent:event = GetNativeCell(2);
     new Function:callback = GetNativeCell(3);
@@ -181,6 +202,11 @@ public API_HookEvent(Handle:plugin, numParams)
 //native ZM_UnhookEvent(ZMModule:module, ZMEvent:event, Function:callback);
 public API_UnhookEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return;
+    }
+    
     new ZMModule:module = GetNativeCell(1);
     new ZMEvent:event = GetNativeCell(2);
     new Function:callback = GetNativeCell(3);
@@ -208,6 +234,11 @@ public API_UnhookEvent(Handle:plugin, numParams)
 //native ZM_StartEvent(ZMEvent:event);
 public API_StartEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return;
+    }
+    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -243,6 +274,11 @@ public API_StartEvent(Handle:plugin, numParams)
 //native ZM_StartSingleEvent(ZMEvent:event, ZMModule:module)
 public API_StartSingleEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return;
+    }
+    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -274,6 +310,11 @@ public API_StartSingleEvent(Handle:plugin, numParams)
 //native ZM_FireEvent(&any:result = 0);
 public API_FireEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return 0;
+    }
+    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -308,6 +349,11 @@ public API_FireEvent(Handle:plugin, numParams)
 //native ZM_CancelEvent();
 public API_CancelEvent(Handle:plugin, numParams)
 {
+    if (!AssertEventManagerReady())
+    {
+        return;
+    }
+    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {

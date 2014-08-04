@@ -411,4 +411,6 @@ bool:AssertEventManagerReady()
         ThrowNativeError(SP_ERROR_ABORTED, "The event manager is not ready.");
         return false;
     }
+    
+    return true;
 }
