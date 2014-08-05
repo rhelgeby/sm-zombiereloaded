@@ -79,7 +79,7 @@ ZMEvent:CreateZMEvent(
     new Handle:callbacks = CreateTrie();
     ObjLib_SetHandle(event, "callbacks", callbacks);
     
-    PrintToServer("Created event\"%s\".", name);
+    LogMessage("Created event: \"%s\" (%x)", name, event);
     
     return ZMEvent:event;
 }
@@ -93,6 +93,9 @@ DeleteZMEvent(ZMEvent:event, bool:deleteForward = true)
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid event: %x", event);
     }
     
+    new String:eventName[EVENT_STRING_LEN];
+    GetZMEventName(event, eventName, sizeof(eventName));
+    
     new Handle:forwardRef = ObjLib_GetHandle(Object:event, "forward");
     new Handle:callbacks = ObjLib_GetHandle(Object:event, "callbacks");
     
@@ -103,9 +106,9 @@ DeleteZMEvent(ZMEvent:event, bool:deleteForward = true)
     
     CloseHandle(callbacks);
     
-    ObjLib_DeleteObject(Object:event);
+    ObjLib_DeleteObject(Object:event, false);
     
-    PrintToServer("Deleted event 0x%X.", event);
+    LogMessage("Deleted event: \"%s\" (%x)", eventName, event);
 }
 
 /*____________________________________________________________________________*/

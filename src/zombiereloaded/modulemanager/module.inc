@@ -74,7 +74,7 @@ ZMModule:CreateModule(Handle:plugin, const String:name[])
     ObjLib_SetHandle(module, "plugin", plugin);
     ObjLib_SetString(module, "name", name);
     
-    LogMessage("Created module \"%s\": %x", name, module);
+    LogMessage("Created module: \"%s\" (%x)", name, module);
     
     return ZMModule:module;
 }
@@ -88,9 +88,12 @@ DeleteModule(ZMModule:module)
         ThrowError("Invalid module.");
     }
     
+    new String:moduleName[MODULE_STRING_LEN];
+    GetModuleName(module, moduleName, sizeof(moduleName));
+    
     ObjLib_DeleteObject(Object:module, false);
     
-    LogMessage("Deleted module: %x", module);
+    LogMessage("Deleted module: \"%s\" (%x)", moduleName, module);
 }
 
 /*____________________________________________________________________________*/
