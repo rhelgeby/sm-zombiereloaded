@@ -68,6 +68,27 @@ new ZMEvent:EventStarted = INVALID_ZM_EVENT;
  */
 new bool:EventManagerReady = false;
 
+/**
+ * Module for the event manager.
+ */
+new ZMModule:EventManagerModule = INVALID_ZM_MODULE;
+
+/*____________________________________________________________________________*/
+
+// Predefined events (and their forwards) by the event manager.
+
+new Handle:ForwardOnEventManagerReady = INVALID_HANDLE;
+new ZMEvent:EventOnEventManagerReady = INVALID_ZM_EVENT;
+
+new Handle:ForwardOnEventManagerDisable = INVALID_HANDLE;
+new ZMEvent:EventOnEventManagerDisable = INVALID_ZM_EVENT;
+
+new Handle:ForwardOnEventsCreate = INVALID_HANDLE;
+new ZMEvent:EventOnEventsCreate = INVALID_ZM_EVENT;
+
+new Handle:ForwardOnEventsCreated = INVALID_HANDLE;
+new ZMEvent:EventOnEventsCreated = INVALID_ZM_EVENT;
+
 /*____________________________________________________________________________*/
 
 #include "zombiereloaded/libraries/objectlib"
@@ -171,24 +192,6 @@ GetHexString(any:value, String:buffer[], maxlen)
 
 /*____________________________________________________________________________*/
 
-Function:GetModuleCallback(ZMEvent:event, ZMModule:module)
-{
-    new Function:callback = INVALID_FUNCTION;
-    
-    decl String:moduleIdString[16];
-    GetHexString(module, moduleIdString, sizeof(moduleIdString));
-    
-    new Handle:callbacks = GetZMEventCallbacks(event);
-    if (GetTrieValue(callbacks, moduleIdString, callback))
-    {
-        return callback;
-    }
-    
-    return INVALID_FUNCTION;
-}
-
-/*____________________________________________________________________________*/
-
 public Handle:StartEvent(ZMEvent:event)
 {
     if (!AssertIsValidZMEvent(event)
@@ -256,7 +259,8 @@ HookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
 {
     if (!AssertIsValidZMModule(module)
         || !AssertIsValidZMEvent(event)
-        || !AssertIsValidCallback(callback))
+        || !AssertIsValidCallback(callback)
+        || !AssertHookNotExists(event, module))
     {
         return;
     }
@@ -267,7 +271,7 @@ HookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
     {
         ThrowForwardUpdateError();
     }
-    AddCallbackToEvent(event, callback);
+    AddCallbackToEvent(event, module, callback);
 }
 
 /*____________________________________________________________________________*/
@@ -276,7 +280,8 @@ UnhookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
 {
     if (!AssertIsValidZMModule(module)
         || !AssertIsValidZMEvent(event)
-        || !AssertIsValidCallback(callback))
+        || !AssertIsValidCallback(callback)
+        || !AssertHookExists(event, module))
     {
         return;
     }
@@ -288,7 +293,7 @@ UnhookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
     {
         ThrowForwardUpdateError();
     }
-    RemoveCallbackFromEvent(event, callback);
+    RemoveCallbackFromEvent(event, module);
 }
 
 /*____________________________________________________________________________*/
@@ -389,6 +394,32 @@ bool:AssertIsValidCallback(Function:callback)
     if (callback == INVALID_FUNCTION)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid callback: %x", callback);
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertHookNotExists(ZMEvent:event, ZMModule:module)
+{
+    if (HasModuleCallback(event, module))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "The module (%x) has already hooked this event (%x).", module, event);
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertHookExists(ZMEvent:event, ZMModule:module)
+{
+    if (!HasModuleCallback(event, module))
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "The module (%x) has not hooked this event (%x).", module, event);
         return false;
     }
     

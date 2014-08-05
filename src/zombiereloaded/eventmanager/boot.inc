@@ -77,8 +77,9 @@ public OnLibraryRemoved(const String:name[])
 
 LoadModule()
 {
-    // The event manager doesn't need a module. We only need to know when the
-    // module manager is loaded and unloaded.
+    EventManagerModule = ZM_CreateModule(MODULE_ZM_EVENT_MANAGER);
+    
+    CreatePredefinedEvents();
     EventManagerReady = true;
 }
 
@@ -86,6 +87,10 @@ LoadModule()
 
 UnloadModule()
 {
+    ZM_DeleteModule();
+    EventManagerModule = INVALID_ZM_MODULE;
+    
+    DeletePredefinedEvents();
     EventManagerReady = false;
 }
 
@@ -102,4 +107,41 @@ InitializeDataStorage()
     {
         EventNameIndex = CreateArray();
     }
+}
+
+/*____________________________________________________________________________*/
+
+CreatePredefinedEvents()
+{
+    ForwardOnEventManagerReady = CreateForward(ET_Ignore);
+    EventOnEventManagerReady = AddZMEvent(EventManagerModule, ZM_ON_EVENTMANAGER_READY, ForwardOnEventManagerReady);
+    
+    ForwardOnEventManagerDisable = CreateForward(ET_Ignore);
+    EventOnEventManagerDisable = AddZMEvent(EventManagerModule, ZM_ON_EVENTMANAGER_DISABLE, ForwardOnEventManagerDisable);
+    
+    ForwardOnEventsCreate = CreateForward(ET_Ignore);
+    EventOnEventsCreate = AddZMEvent(EventManagerModule, ZM_ON_EVENTS_CREATE, ForwardOnEventsCreate);
+    
+    ForwardOnEventsCreated = CreateForward(ET_Ignore);
+    EventOnEventsCreated = AddZMEvent(EventManagerModule, ZM_ON_EVENTS_CREATED, ForwardOnEventsCreated);
+}
+
+/*____________________________________________________________________________*/
+
+DeletePredefinedEvents()
+{
+    // Remove events and forwards. Forwards are removed by RemoveZMEvent, we
+    // just need to reset the handle.
+    
+    RemoveZMEvent(EventOnEventManagerReady);
+    ForwardOnEventManagerReady = INVALID_HANDLE;
+    
+    RemoveZMEvent(EventOnEventManagerDisable);
+    ForwardOnEventManagerDisable = INVALID_HANDLE;
+    
+    RemoveZMEvent(EventOnEventsCreate);
+    ForwardOnEventsCreate = INVALID_HANDLE;
+    
+    RemoveZMEvent(EventOnEventsCreated);
+    ForwardOnEventsCreated = INVALID_HANDLE;
 }

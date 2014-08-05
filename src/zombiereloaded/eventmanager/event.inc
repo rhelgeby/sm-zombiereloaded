@@ -138,24 +138,49 @@ Handle:GetZMEventCallbacks(ZMEvent:event)
 
 /*____________________________________________________________________________*/
 
-AddCallbackToEvent(ZMEvent:event, Function:callback)
+AddCallbackToEvent(ZMEvent:event, ZMModule:module, Function:callback)
 {
     new Handle:callbacks = GetZMEventCallbacks(event);
-    PushArrayCell(callbacks, callback);
+    
+    new String:moduleIdString[16];
+    GetHexString(module, moduleIdString, sizeof(moduleIdString));
+    
+    SetTrieValue(callbacks, moduleIdString, callback);
 }
 
 /*____________________________________________________________________________*/
 
-bool:RemoveCallbackFromEvent(ZMEvent:event, Function:callback)
+bool:RemoveCallbackFromEvent(ZMEvent:event, ZMModule:module)
 {
     new Handle:callbacks = GetZMEventCallbacks(ZMEvent:event);
-    new callbackIndex = FindValueInArray(callbacks, callback);
     
-    if (callbackIndex < 0)
+    new String:moduleIdString[16];
+    GetHexString(module, moduleIdString, sizeof(moduleIdString));
+    
+    return bool:RemoveFromTrie(callbacks, moduleIdString);
+}
+
+/*____________________________________________________________________________*/
+
+Function:GetModuleCallback(ZMEvent:event, ZMModule:module)
+{
+    new Function:callback = INVALID_FUNCTION;
+    
+    decl String:moduleIdString[16];
+    GetHexString(module, moduleIdString, sizeof(moduleIdString));
+    
+    new Handle:callbacks = GetZMEventCallbacks(event);
+    if (GetTrieValue(callbacks, moduleIdString, callback))
     {
-        return false;
+        return callback;
     }
     
-    RemoveFromArray(callbacks, callbackIndex);
-    return true;
+    return INVALID_FUNCTION;
+}
+
+/*____________________________________________________________________________*/
+
+bool:HasModuleCallback(ZMEvent:event, ZMModule:module)
+{
+    return GetModuleCallback(event, module) != INVALID_FUNCTION;
 }
