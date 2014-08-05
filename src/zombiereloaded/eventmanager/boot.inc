@@ -105,7 +105,7 @@ InitializeDataStorage()
     
     if (EventNameIndex == INVALID_HANDLE)
     {
-        EventNameIndex = CreateArray();
+        EventNameIndex = CreateTrie();
     }
 }
 
