@@ -92,8 +92,9 @@ new ZMEvent:EventOnEventsCreated = INVALID_ZM_EVENT;
 /*____________________________________________________________________________*/
 
 #include "zombiereloaded/libraries/objectlib"
-#include "zombiereloaded/eventmanager/boot"
 #include "zombiereloaded/eventmanager/event"
+#include "zombiereloaded/eventmanager/events"
+#include "zombiereloaded/eventmanager/boot"
 #include "zombiereloaded/eventmanager/natives"
 
 /*____________________________________________________________________________*/
