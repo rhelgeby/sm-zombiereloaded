@@ -270,6 +270,7 @@ HookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
     if (!AddToForward(forwardRef, ownerPlugin, callback))
     {
         ThrowForwardUpdateError();
+        return;
     }
     AddCallbackToEvent(event, module, callback);
 }
@@ -292,6 +293,7 @@ UnhookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
     if (!RemoveFromForward(forwardRef, ownerPlugin, callback))
     {
         ThrowForwardUpdateError();
+        return;
     }
     RemoveCallbackFromEvent(event, module);
 }
@@ -430,7 +432,7 @@ bool:AssertHookExists(ZMEvent:event, ZMModule:module)
 
 ThrowForwardUpdateError()
 {
-    ThrowNativeError(SP_ERROR_ABORTED, "Failed to update callback list. This can not happen while an event call is started, but not fired.");
+    ThrowNativeError(SP_ERROR_ABORTED, "Failed to update callback list. This can not happen while an event call is started and not fired.");
 }
 
 /*____________________________________________________________________________*/
