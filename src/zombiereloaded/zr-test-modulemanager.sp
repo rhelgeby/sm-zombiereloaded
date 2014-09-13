@@ -86,7 +86,7 @@ public OnLibraryRemoved(const String:name[])
 
 /*____________________________________________________________________________*/
 
-LoadModule()
+ZM_OnModuleManagerAdded()
 {
     TestModule = ZM_CreateModule("zr_test_modulemanager");
     LogMessage("Registered module: %x", TestModule);
@@ -94,7 +94,7 @@ LoadModule()
 
 /*____________________________________________________________________________*/
 
-UnloadModule()
+ZM_OnModuleManagerRemoved()
 {
     ZM_DeleteModule();
     TestModule = INVALID_ZM_MODULE;

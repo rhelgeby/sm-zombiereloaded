@@ -427,3 +427,25 @@ stock bool:AssertIsValidZMEvent(ZMEvent:event)
     
     return true;
 }
+
+/*____________________________________________________________________________*/
+
+/**
+ * Marks all natives in the module manager as optional.
+ */
+stock ZM_SetEventManagerOptional()
+{
+    MarkNativeAsOptional("ZM_CreateEvent");
+    MarkNativeAsOptional("ZM_DeleteEvent");
+    MarkNativeAsOptional("ZM_GetEventByName");
+    MarkNativeAsOptional("ZM_HookEvent");
+    MarkNativeAsOptional("ZM_UnhookEvent");
+    MarkNativeAsOptional("ZM_StartEvent");
+    MarkNativeAsOptional("ZM_StartSingleEvent");
+    MarkNativeAsOptional("ZM_FireEvent");
+    MarkNativeAsOptional("ZM_CancelEvent");
+    MarkNativeAsOptional("ZM_HookEventManagerReady");
+    MarkNativeAsOptional("ZM_HookEventManagerDisable");
+    MarkNativeAsOptional("ZM_HookEventsCreate");
+    MarkNativeAsOptional("ZM_HookEventsCreated");
+}

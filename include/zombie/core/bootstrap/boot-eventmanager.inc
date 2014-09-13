@@ -3,8 +3,8 @@
  *
  *  Zombie API
  *
- *  File:           boot-modulemanager.inc
- *  Description:    Module manager bootstrapper.
+ *  File:           boot-eventmanager.inc
+ *  Description:    Event manager bootstrapper.
  *
  *  Copyright (C) 2014  Richard Helgeby
  *
@@ -28,108 +28,105 @@
 
 USAGE
 
-Use this bootstrapper to properly load and unload your module, and to avoid
-duplicated code in multiple modules.
-
 Create the following functions in your plugin. These will be called by this
-bootstrapper when the module manager is added or removed.
+bootstrapper when the event manager is added or removed:
 
-    ZM_ModuleMgr_OnModuleManagerAdded
-    ZM_ModuleMgr_OnModuleManagerRemoved
+    ZM_OnEventManagerAdded
+    ZM_OnEventManagerRemoved
 
 Call the following functions. The last part of their names tell where you should
 call them from:
 
-    ZM_ModuleMgr_AskPluginLoad2
-    ZM_ModuleMgr_OnAllPluginsLoaded
-    ZM_ModuleMgr_OnPluginEnd
-    ZM_ModuleMgr_OnLibraryAdded
-    ZM_ModuleMgr_OnLibraryRemoved
+    ZM_EventMgr_AskPluginLoad2
+    ZM_EventMgr_OnAllPluginsLoaded
+    ZM_EventMgr_OnPluginEnd
+    ZM_EventMgr_OnLibraryAdded
+    ZM_EventMgr_OnLibraryRemoved
 
 */
 
 /*____________________________________________________________________________*/
 
-new ZM_ModuleManagerLoaded = false;
+new ZM_EventManagerLoaded = false;
 
 /*____________________________________________________________________________*/
 
-stock APLRes:ZM_ModuleMgr_AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+stock APLRes:ZM_EventMgr_AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
-    ZM_SetModuleManagerOptional();
+    ZM_SetEventManagerOptional();
     return APLRes_Success;
 }
 
 /*____________________________________________________________________________*/
 
-stock ZM_ModuleMgr_OnAllPluginsLoaded()
+stock ZM_EventMgr_OnAllPluginsLoaded()
 {
-    if (LibraryExists(LIBRARY_ZM_MODULE_MANAGER))
+    if (LibraryExists(LIBRARY_ZM_EVENT_MANAGER))
     {
-        ZM_ModuleMgr_OnModuleManagerAdded();
+        ZM_EventMgr_OnEventManagerAdded();
     }
 }
 
 /*____________________________________________________________________________*/
 
-stock ZM_ModuleMgr_OnPluginEnd()
+stock ZM_EventMgr_OnPluginEnd()
 {
-    ZM_ModuleMgr_OnModuleManagerRemoved();
+    ZM_EventMgr_OnEventManagerRemoved();
 }
 
 /*____________________________________________________________________________*/
 
-stock ZM_ModuleMgr_OnLibraryAdded(const String:name[])
+stock ZM_EventMgr_OnLibraryAdded(const String:name[])
 {
-    if (StrEqual(name, LIBRARY_ZM_MODULE_MANAGER))
+    if (StrEqual(name, LIBRARY_ZM_EVENT_MANAGER))
     {
-        ZM_ModuleMgr_OnModuleManagerAdded();
+        ZM_EventMgr_OnEventManagerAdded();
     }
 }
 
 /*____________________________________________________________________________*/
 
-stock ZM_ModuleMgr_OnLibraryRemoved(const String:name[])
+stock ZM_EventMgr_OnLibraryRemoved(const String:name[])
 {
-    if (StrEqual(name, LIBRARY_ZM_MODULE_MANAGER))
+    if (StrEqual(name, LIBRARY_ZM_EVENT_MANAGER))
     {
-        ZM_ModuleMgr_OnModuleManagerRemoved();
+        ZM_EventMgr_OnEventManagerRemoved();
     }
 }
 
 /*____________________________________________________________________________*/
 
-stock ZM_ModuleMgr_OnModuleManagerAdded()
+stock ZM_EventMgr_OnEventManagerAdded()
 {
-    if (ZM_ModuleManagerLoaded)
-    {
-        return;
-    }
-    
-    ZM_ModuleManagerLoaded = true;
-    LogMessage("Module manager available.");
-    
-    ZM_OnModuleManagerAdded();
-}
-
-/*____________________________________________________________________________*/
-
-stock ZM_ModuleMgr_OnModuleManagerRemoved()
-{
-    if (!ZM_ModuleManagerLoaded)
+    if (ZM_EventManagerLoaded)
     {
         return;
     }
     
-    ZM_ModuleManagerLoaded = false;
-    LogMessage("Module manager removed.");
+    ZM_EventManagerLoaded = true;
+    LogMessage("Event manager available.");
     
-    ZM_OnModuleManagerRemoved();
+    ZM_OnEventManagerAdded();
 }
 
 /*____________________________________________________________________________*/
 
-stock ZM_IsModuleManagerLoaded()
+stock ZM_EventMgr_OnEventManagerRemoved()
 {
-    return ZM_ModuleManagerLoaded;
+    if (!ZM_EventManagerLoaded)
+    {
+        return;
+    }
+    
+    ZM_EventManagerLoaded = false;
+    LogMessage("Event manager removed.");
+    
+    ZM_OnEventManagerRemoved();
+}
+
+/*____________________________________________________________________________*/
+
+stock ZM_IsEventManagerLoaded()
+{
+    return ZM_EventManagerLoaded;
 }

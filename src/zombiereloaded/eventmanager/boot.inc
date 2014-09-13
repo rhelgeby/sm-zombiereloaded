@@ -75,6 +75,20 @@ public OnLibraryRemoved(const String:name[])
 
 /*____________________________________________________________________________*/
 
+ZM_OnModuleManagerAdded()
+{
+    LoadModule();
+}
+
+/*____________________________________________________________________________*/
+
+ZM_OnModuleManagerRemoved()
+{
+    UnloadModule();
+}
+
+/*____________________________________________________________________________*/
+
 LoadModule()
 {
     EventManagerModule = ZM_CreateModule(MODULE_ZM_EVENT_MANAGER);
@@ -86,7 +100,6 @@ LoadModule()
     FireOnEventsCreate();
     FireOnEventsCreated();
 }
-
 /*____________________________________________________________________________*/
 
 UnloadModule()
