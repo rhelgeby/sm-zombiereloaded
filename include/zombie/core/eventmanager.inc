@@ -273,9 +273,8 @@ native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
 /*____________________________________________________________________________*/
 
 /**
- * Removes an event hook.
+ * Removes an event hook for the current module.
  *
- * @param module        Module where callback resides.
  * @param event         Event to remove callback from.
  * @param callback      Callback to unhook.
  *
