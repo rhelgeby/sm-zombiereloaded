@@ -49,6 +49,11 @@ public Plugin:myinfo =
 
 new ZMModule:TestModule = INVALID_ZM_MODULE;
 
+new ZMEvent:EventManagerReady = INVALID_ZM_EVENT;
+new ZMEvent:EventManagerDisable = INVALID_ZM_EVENT;
+new ZMEvent:EventsCreate = INVALID_ZM_EVENT;
+new ZMEvent:EventsCreated = INVALID_ZM_EVENT;
+
 /*____________________________________________________________________________*/
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -91,6 +96,9 @@ ZM_OnCoreLoaded()
 {
     TestModule = ZM_CreateModule("zr_test_eventmanager");
     LogMessage("Registered module: %x", TestModule);
+    
+    EventManagerReady = ZM_HookEventManagerReady(OnEventManagerReady);
+    EventManagerDisable = ZM_HookEventManagerDisable(OnEventManagerDisable);
 }
 
 /*____________________________________________________________________________*/
@@ -101,4 +109,40 @@ ZM_OnCoreUnloaded()
     TestModule = INVALID_ZM_MODULE;
     
     LogMessage("Deleted module.");
+}
+
+/*____________________________________________________________________________*/
+
+public OnEventManagerReady()
+{
+    LogMessage("OnEventManagerReady");
+    
+    EventsCreate = ZM_HookEventsCreate(OnEventsCreate);
+    EventsCreated = ZM_HookEventsCreated(OnEventsCreated);
+}
+
+/*____________________________________________________________________________*/
+
+public OnEventManagerDisable()
+{
+    LogMessage("OnEventManagerDisable");
+    
+    ZM_UnhookEvent(EventsCreate, OnEventsCreate);
+    ZM_UnhookEvent(EventsCreated, OnEventsCreated);
+    ZM_UnhookEvent(EventManagerReady, OnEventManagerReady);
+    ZM_UnhookEvent(EventManagerDisable, OnEventManagerDisable);
+}
+
+/*____________________________________________________________________________*/
+
+public OnEventsCreate()
+{
+    LogMessage("OnEventsCreate");
+}
+
+/*____________________________________________________________________________*/
+
+public OnEventsCreated()
+{
+    LogMessage("OnEventsCreated");
 }
