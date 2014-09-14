@@ -186,9 +186,8 @@ public API_HookEvent(Handle:plugin, numParams)
 /*____________________________________________________________________________*/
 
 /**
- * Removes an event hook.
+ * Removes an event hook for the current module.
  *
- * @param module        Module where callback resides.
  * @param event         Event to remove callback from.
  * @param callback      Callback to unhook.
  *
@@ -199,7 +198,7 @@ public API_HookEvent(Handle:plugin, numParams)
  *                      - Invalid event
  *                      - An event call is in progress (started, but not fired)
  */
-//native ZM_UnhookEvent(ZMModule:module, ZMEvent:event, Function:callback);
+//native ZM_UnhookEvent(ZMEvent:event, Function:callback);
 public API_UnhookEvent(Handle:plugin, numParams)
 {
     if (!AssertEventManagerReady())
@@ -207,9 +206,14 @@ public API_UnhookEvent(Handle:plugin, numParams)
         return;
     }
     
-    new ZMModule:module = GetNativeCell(1);
-    new ZMEvent:event = GetNativeCell(2);
-    new Function:callback = GetNativeCell(3);
+    new ZMModule:module = ZM_GetModuleByPlugin(plugin);
+    if (!AssertPluginHasZMModule(module))
+    {
+        return;
+    }
+    
+    new ZMEvent:event = GetNativeCell(1);
+    new Function:callback = GetNativeCell(2);
     
     UnhookZMEvent(module, event, callback);
 }
@@ -392,7 +396,7 @@ public API_HookEventManagerReady(Handle:plugin, numParams)
     
     new Function:callback = GetNativeCell(1);
     
-    HookZMEvent(EventManagerModule, EventOnEventManagerReady, callback);
+    HookZMEvent(module, EventOnEventManagerReady, callback);
     return _:EventOnEventManagerReady;
 }
 
@@ -418,7 +422,7 @@ public API_HookEventManagerDisable(Handle:plugin, numParams)
     
     new Function:callback = GetNativeCell(1);
     
-    HookZMEvent(EventManagerModule, EventOnEventManagerDisable, callback);
+    HookZMEvent(module, EventOnEventManagerDisable, callback);
     return _:EventOnEventManagerDisable;
 }
 
@@ -445,7 +449,7 @@ public API_HookEventsCreate(Handle:plugin, numParams)
     
     new Function:callback = GetNativeCell(1);
     
-    HookZMEvent(EventManagerModule, EventOnEventsCreate, callback);
+    HookZMEvent(module, EventOnEventsCreate, callback);
     return _:EventOnEventsCreate;
 }
 
@@ -472,6 +476,6 @@ public API_HookEventsCreated(Handle:plugin, numParams)
     
     new Function:callback = GetNativeCell(1);
     
-    HookZMEvent(EventManagerModule, EventOnEventsCreated, callback);
+    HookZMEvent(module, EventOnEventsCreated, callback);
     return _:EventOnEventsCreated;
 }
