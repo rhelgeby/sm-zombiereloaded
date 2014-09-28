@@ -50,6 +50,7 @@ public OnPluginStart()
 public OnAllPluginsLoaded()
 {
     ZM_ModuleMgr_OnAllPluginsLoaded();
+    FireInitEventsIfLoaded();
 }
 
 /*____________________________________________________________________________*/
@@ -92,25 +93,29 @@ ZM_OnModuleManagerRemoved()
 LoadModule()
 {
     EventManagerModule = ZM_CreateModule(MODULE_ZM_EVENT_MANAGER);
-    
-    CreatePredefinedEvents();
-    EventManagerReady = true;
-    
-    FireOnEventManagerReady();
-    FireOnEventsCreate();
-    FireOnEventsCreated();
 }
+
 /*____________________________________________________________________________*/
 
 UnloadModule()
 {
     FireOnEventManagerDisable();
+    DeletePredefinedEventsIfExists();
     
     ZM_DeleteModule();
     EventManagerModule = INVALID_ZM_MODULE;
-    
-    DeletePredefinedEvents();
-    EventManagerReady = false;
+}
+
+/*____________________________________________________________________________*/
+
+FireInitEventsIfLoaded()
+{
+    if (EventManagerModule != INVALID_ZM_MODULE)
+    {
+        CreatePredefinedEventsIfNotExist();
+        FireOnEventsCreate();
+        FireOnEventsCreated();
+    }
 }
 
 /*____________________________________________________________________________*/

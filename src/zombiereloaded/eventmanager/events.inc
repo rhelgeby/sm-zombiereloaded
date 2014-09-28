@@ -24,39 +24,63 @@
  * ============================================================================
  */
 
-CreatePredefinedEvents()
+CreatePredefinedEventsIfNotExist()
 {
-    ForwardOnEventManagerReady = CreateForward(ET_Ignore);
-    EventOnEventManagerReady = AddZMEvent(EventManagerModule, ZM_ON_EVENTMANAGER_READY, ForwardOnEventManagerReady);
+    if (ForwardOnEventManagerReady == INVALID_HANDLE)
+    {
+        ForwardOnEventManagerReady = CreateForward(ET_Ignore);
+        EventOnEventManagerReady = AddZMEvent(EventManagerModule, ZM_ON_EVENTMANAGER_READY, ForwardOnEventManagerReady);
+    }
+
+    if (ForwardOnEventManagerDisable == INVALID_HANDLE)
+    {
+        ForwardOnEventManagerDisable = CreateForward(ET_Ignore);
+        EventOnEventManagerDisable = AddZMEvent(EventManagerModule, ZM_ON_EVENTMANAGER_DISABLE, ForwardOnEventManagerDisable);
+    }
     
-    ForwardOnEventManagerDisable = CreateForward(ET_Ignore);
-    EventOnEventManagerDisable = AddZMEvent(EventManagerModule, ZM_ON_EVENTMANAGER_DISABLE, ForwardOnEventManagerDisable);
+    if (ForwardOnEventsCreate == INVALID_HANDLE)
+    {
+        ForwardOnEventsCreate = CreateForward(ET_Ignore);
+        EventOnEventsCreate = AddZMEvent(EventManagerModule, ZM_ON_EVENTS_CREATE, ForwardOnEventsCreate);
+    }
     
-    ForwardOnEventsCreate = CreateForward(ET_Ignore);
-    EventOnEventsCreate = AddZMEvent(EventManagerModule, ZM_ON_EVENTS_CREATE, ForwardOnEventsCreate);
-    
-    ForwardOnEventsCreated = CreateForward(ET_Ignore);
-    EventOnEventsCreated = AddZMEvent(EventManagerModule, ZM_ON_EVENTS_CREATED, ForwardOnEventsCreated);
+    if (ForwardOnEventsCreated == INVALID_HANDLE)
+    {
+        ForwardOnEventsCreated = CreateForward(ET_Ignore);
+        EventOnEventsCreated = AddZMEvent(EventManagerModule, ZM_ON_EVENTS_CREATED, ForwardOnEventsCreated);
+    }
 }
 
 /*____________________________________________________________________________*/
 
-DeletePredefinedEvents()
+DeletePredefinedEventsIfExists()
 {
     // Remove events and forwards. Forwards are removed by RemoveZMEvent, we
     // just need to reset the handle.
     
-    RemoveZMEvent(EventOnEventManagerReady);
-    ForwardOnEventManagerReady = INVALID_HANDLE;
+    if (ForwardOnEventManagerReady != INVALID_HANDLE)
+    {
+        RemoveZMEvent(EventOnEventManagerReady);
+        ForwardOnEventManagerReady = INVALID_HANDLE;
+    }
     
-    RemoveZMEvent(EventOnEventManagerDisable);
-    ForwardOnEventManagerDisable = INVALID_HANDLE;
+    if (ForwardOnEventManagerDisable != INVALID_HANDLE)
+    {
+        RemoveZMEvent(EventOnEventManagerDisable);
+        ForwardOnEventManagerDisable = INVALID_HANDLE;
+    }
     
-    RemoveZMEvent(EventOnEventsCreate);
-    ForwardOnEventsCreate = INVALID_HANDLE;
+    if (ForwardOnEventsCreate != INVALID_HANDLE)
+    {
+        RemoveZMEvent(EventOnEventsCreate);
+        ForwardOnEventsCreate = INVALID_HANDLE;
+    }
     
-    RemoveZMEvent(EventOnEventsCreated);
-    ForwardOnEventsCreated = INVALID_HANDLE;
+    if (ForwardOnEventsCreated != INVALID_HANDLE)
+    {
+        RemoveZMEvent(EventOnEventsCreated);
+        ForwardOnEventsCreated = INVALID_HANDLE;
+    }
 }
 
 /*____________________________________________________________________________*/

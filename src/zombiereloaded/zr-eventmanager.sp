@@ -258,6 +258,8 @@ CancelEvent()
 
 HookZMEvent(ZMModule:module, ZMEvent:event, Function:callback)
 {
+    CreatePredefinedEventsIfNotExist();
+    
     if (!AssertIsValidZMModule(module)
         || !AssertIsValidZMEvent(event)
         || !AssertIsValidCallback(callback)

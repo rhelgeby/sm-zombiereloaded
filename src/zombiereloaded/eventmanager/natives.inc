@@ -53,19 +53,13 @@ InitAPI()
  *                      ZM_DeleteEvent will close this handle by default.
  *
  * @return              Event ID.
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Blank event name
  *                      - Event name already in use
  */
 //native ZMEvent:ZM_CreateEvent(const String:eventName[], Handle:forwardRef);
 public API_CreateEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return 0;
-    }
-    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -91,19 +85,13 @@ public API_CreateEvent(Handle:plugin, numParams)
  *                      deleted (closing the handle). Default is true.
  *
  * @noreturn
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Caller is not the event owner
  *                      - Invalid event
  */
 //native ZM_DeleteEvent(ZMEvent:event, bool:deleteForward = true);
 public API_DeleteEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return;
-    }
-    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -129,17 +117,11 @@ public API_DeleteEvent(Handle:plugin, numParams)
  * @param eventName     Event name to look up.
  *
  * @return              Event ID if found, otherwise INVALID_ZM_EVENT.
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  */
 //native ZMEvent:ZM_GetEventByName(const String:eventName[]);
 public API_GetEventByName(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return 0;
-    }
-    
     new String:eventName[EVENT_STRING_LEN];
     GetNativeString(1, eventName, sizeof(eventName));
     
@@ -162,8 +144,7 @@ public API_GetEventByName(Handle:plugin, numParams)
  * @param callback      Function callback to add.
  *
  * @noreturn
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Invalid callback
  *                      - Invalid event
  *                      - An event call is in progress (started, but not fired)
@@ -171,11 +152,6 @@ public API_GetEventByName(Handle:plugin, numParams)
 //native ZM_HookEvent(ZMModule:module, ZMEvent:event, Function:callback);
 public API_HookEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return;
-    }
-    
     new ZMModule:module = GetNativeCell(1);
     new ZMEvent:event = GetNativeCell(2);
     new Function:callback = GetNativeCell(3);
@@ -192,8 +168,7 @@ public API_HookEvent(Handle:plugin, numParams)
  * @param callback      Callback to unhook.
  *
  * @noreturn
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Invalid callback
  *                      - Invalid event
  *                      - An event call is in progress (started, but not fired)
@@ -201,11 +176,6 @@ public API_HookEvent(Handle:plugin, numParams)
 //native ZM_UnhookEvent(ZMEvent:event, Function:callback);
 public API_UnhookEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return;
-    }
-    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -229,8 +199,7 @@ public API_UnhookEvent(Handle:plugin, numParams)
  * @param event         Event to start.
  *
  * @noreturn
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Caller is not the event owner
  *                      - Invalid event
  *                      - An event call is in progress (started, but not fired)
@@ -238,11 +207,6 @@ public API_UnhookEvent(Handle:plugin, numParams)
 //native ZM_StartEvent(ZMEvent:event);
 public API_StartEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return;
-    }
-    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -269,8 +233,7 @@ public API_StartEvent(Handle:plugin, numParams)
  * @param module        Target module to fire event in.
  *
  * @noreturn
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Caller is not the event owner
  *                      - Invalid event
  *                      - An event call is in progress (started, but not fired)
@@ -278,11 +241,6 @@ public API_StartEvent(Handle:plugin, numParams)
 //native ZM_StartSingleEvent(ZMEvent:event, ZMModule:module)
 public API_StartSingleEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return;
-    }
-    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -307,18 +265,12 @@ public API_StartSingleEvent(Handle:plugin, numParams)
  *
  * @return              SP_ERROR_NONE on success, any other integer on failure.
  *                      See SP_ERROR_* constants.
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Caller is not the event owner
  */
 //native ZM_FireEvent(&any:result = 0);
 public API_FireEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return 0;
-    }
-    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -345,19 +297,13 @@ public API_FireEvent(Handle:plugin, numParams)
  * Cancels a call to an event.
  *
  * @noreturn
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Caller is not the event owner
  *                      - Called before an event is started
  */
 //native ZM_CancelEvent();
 public API_CancelEvent(Handle:plugin, numParams)
 {
-    if (!AssertEventManagerReady())
-    {
-        return;
-    }
-    
     new ZMModule:module = ZM_GetModuleByPlugin(plugin);
     if (!AssertPluginHasZMModule(module))
     {
@@ -434,8 +380,7 @@ public API_HookEventManagerDisable(Handle:plugin, numParams)
  * @param callback      Function to call when event is fired.
  *
  * @return              Event ID.
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Event is already hooked by the module
  */
 //native ZMEvent:ZM_HookEventsCreate(ZM_OnEventsCreate:callback);
@@ -461,8 +406,7 @@ public API_HookEventsCreate(Handle:plugin, numParams)
  * @param callback      Function to call when event is fired.
  *
  * @return              Event ID.
- * @error               - Event manager is not ready
- *                      - Caller is not a module
+ * @error               - Caller is not a module
  *                      - Event is already hooked by the module
  */
 //native ZMEvent:ZM_HookEventsCreated(ZM_OnEventsCreated:callback);
