@@ -49,8 +49,6 @@ public Plugin:myinfo =
 
 new ZMModule:TestModule = INVALID_ZM_MODULE;
 
-new ZMEvent:EventManagerReady = INVALID_ZM_EVENT;
-new ZMEvent:EventManagerDisable = INVALID_ZM_EVENT;
 new ZMEvent:EventsCreate = INVALID_ZM_EVENT;
 new ZMEvent:EventsCreated = INVALID_ZM_EVENT;
 
@@ -67,6 +65,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 public OnAllPluginsLoaded()
 {
     ZM_BootCore_OnAllPluginsLoaded();
+    HookEventsIfLoaded();
 }
 
 /*____________________________________________________________________________*/
@@ -94,17 +93,21 @@ public OnLibraryRemoved(const String:name[])
 
 ZM_OnCoreLoaded()
 {
+    LogMessage("OnCoreLoaded");
+    
     TestModule = ZM_CreateModule("zr_test_eventmanager");
     LogMessage("Registered module: %x", TestModule);
-    
-    EventManagerReady = ZM_HookEventManagerReady(OnEventManagerReady);
-    EventManagerDisable = ZM_HookEventManagerDisable(OnEventManagerDisable);
 }
 
 /*____________________________________________________________________________*/
 
 ZM_OnCoreUnloaded()
 {
+    LogMessage("OnCoreUnloaded");
+    
+    ZM_UnhookEvent(EventsCreate, OnEventsCreate);
+    ZM_UnhookEvent(EventsCreated, OnEventsCreated);
+    
     ZM_DeleteModule();
     TestModule = INVALID_ZM_MODULE;
     
@@ -113,24 +116,13 @@ ZM_OnCoreUnloaded()
 
 /*____________________________________________________________________________*/
 
-public OnEventManagerReady()
+HookEventsIfLoaded()
 {
-    LogMessage("OnEventManagerReady");
-    
-    EventsCreate = ZM_HookEventsCreate(OnEventsCreate);
-    EventsCreated = ZM_HookEventsCreated(OnEventsCreated);
-}
-
-/*____________________________________________________________________________*/
-
-public OnEventManagerDisable()
-{
-    LogMessage("OnEventManagerDisable");
-    
-    ZM_UnhookEvent(EventsCreate, OnEventsCreate);
-    ZM_UnhookEvent(EventsCreated, OnEventsCreated);
-    ZM_UnhookEvent(EventManagerReady, OnEventManagerReady);
-    ZM_UnhookEvent(EventManagerDisable, OnEventManagerDisable);
+    if (TestModule != INVALID_ZM_MODULE)
+    {
+        EventsCreate = ZM_HookEventsCreate(OnEventsCreate);
+        EventsCreated = ZM_HookEventsCreated(OnEventsCreated);
+    }
 }
 
 /*____________________________________________________________________________*/
