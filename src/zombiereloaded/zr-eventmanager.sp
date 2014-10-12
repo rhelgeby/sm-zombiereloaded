@@ -64,11 +64,6 @@ new Handle:EventNameIndex = INVALID_HANDLE;
 new ZMEvent:EventStarted = INVALID_ZM_EVENT;
 
 /**
- * Stores whether the event manager is ready to handle natives.
- */
-new bool:EventManagerReady = false;
-
-/**
  * Module for the event manager.
  */
 new ZMModule:EventManagerModule = INVALID_ZM_MODULE;
@@ -76,9 +71,6 @@ new ZMModule:EventManagerModule = INVALID_ZM_MODULE;
 /*____________________________________________________________________________*/
 
 // Predefined events (and their forwards) by the event manager.
-
-new Handle:ForwardOnEventManagerReady = INVALID_HANDLE;
-new ZMEvent:EventOnEventManagerReady = INVALID_ZM_EVENT;
 
 new Handle:ForwardOnEventManagerDisable = INVALID_HANDLE;
 new ZMEvent:EventOnEventManagerDisable = INVALID_ZM_EVENT;
@@ -436,17 +428,4 @@ bool:AssertHookExists(ZMEvent:event, ZMModule:module)
 ThrowForwardUpdateError()
 {
     ThrowNativeError(SP_ERROR_ABORTED, "Failed to update callback list. This can not happen while an event call is started and not fired.");
-}
-
-/*____________________________________________________________________________*/
-
-bool:AssertEventManagerReady()
-{
-    if (!EventManagerReady)
-    {
-        ThrowNativeError(SP_ERROR_ABORTED, "The event manager is not ready.");
-        return false;
-    }
-    
-    return true;
 }

@@ -37,7 +37,6 @@ InitAPI()
     CreateNative("ZM_StartSingleEvent", API_StartSingleEvent);
     CreateNative("ZM_FireEvent", API_FireEvent);
     CreateNative("ZM_CancelEvent", API_CancelEvent);
-    CreateNative("ZM_HookEventManagerReady", API_HookEventManagerReady);
     CreateNative("ZM_HookEventManagerDisable", API_HookEventManagerDisable);
     CreateNative("ZM_HookEventsCreate", API_HookEventsCreate);
     CreateNative("ZM_HookEventsCreated", API_HookEventsCreated);
@@ -323,32 +322,6 @@ public API_CancelEvent(Handle:plugin, numParams)
 /*____________________________________________________________________________*/
 
 /**
- * Registers an event hook for the OnEventManagerReady event.
- *
- * @param callback      Function to call when event is fired.
- *
- * @return              Event ID.
- * @error               - Caller is not a module
- *                      - Event is already hooked by the module
- */
-//native ZMEvent:ZM_HookEventManagerReady(ZM_OnEventManagerReady:callback);
-public API_HookEventManagerReady(Handle:plugin, numParams)
-{
-    new ZMModule:module = ZM_GetModuleByPlugin(plugin);
-    if (!AssertPluginHasZMModule(module))
-    {
-        return 0;
-    }
-    
-    new Function:callback = GetNativeCell(1);
-    
-    HookZMEvent(module, EventOnEventManagerReady, callback);
-    return _:EventOnEventManagerReady;
-}
-
-/*____________________________________________________________________________*/
-
-/**
  * Registers an event hook for the OnEventManagerDisable event.
  *
  * @param callback      Function to call when event is fired.
@@ -368,7 +341,7 @@ public API_HookEventManagerDisable(Handle:plugin, numParams)
     
     new Function:callback = GetNativeCell(1);
     
-    HookZMEvent(module, EventOnEventManagerDisable, callback);
+    HookZMEvent(module, GetOnEventManagerDisableEvent(), callback);
     return _:EventOnEventManagerDisable;
 }
 
@@ -394,7 +367,7 @@ public API_HookEventsCreate(Handle:plugin, numParams)
     
     new Function:callback = GetNativeCell(1);
     
-    HookZMEvent(module, EventOnEventsCreate, callback);
+    HookZMEvent(module, GetOnEventsCreateEvent(), callback);
     return _:EventOnEventsCreate;
 }
 
@@ -420,6 +393,6 @@ public API_HookEventsCreated(Handle:plugin, numParams)
     
     new Function:callback = GetNativeCell(1);
     
-    HookZMEvent(module, EventOnEventsCreated, callback);
+    HookZMEvent(module, GetOnEventsCreatedEvent(), callback);
     return _:EventOnEventsCreated;
 }

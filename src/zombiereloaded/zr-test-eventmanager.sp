@@ -97,6 +97,13 @@ ZM_OnCoreLoaded()
     
     TestModule = ZM_CreateModule("zr_test_eventmanager");
     LogMessage("Registered module: %x", TestModule);
+    
+    // TODO: The event manager may not be completely initialized.
+    // Steps to reproduce:
+    // 1. Load all plugins normally.
+    // 2. Unload the event manager.
+    // 3. Load the event manager.
+    HookEventsIfLoaded();
 }
 
 /*____________________________________________________________________________*/

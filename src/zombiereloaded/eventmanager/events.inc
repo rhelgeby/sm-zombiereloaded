@@ -26,12 +26,6 @@
 
 CreatePredefinedEventsIfNotExist()
 {
-    if (ForwardOnEventManagerReady == INVALID_HANDLE)
-    {
-        ForwardOnEventManagerReady = CreateForward(ET_Ignore);
-        EventOnEventManagerReady = AddZMEvent(EventManagerModule, ZM_ON_EVENTMANAGER_READY, ForwardOnEventManagerReady);
-    }
-
     if (ForwardOnEventManagerDisable == INVALID_HANDLE)
     {
         ForwardOnEventManagerDisable = CreateForward(ET_Ignore);
@@ -58,12 +52,6 @@ DeletePredefinedEventsIfExists()
     // Remove events and forwards. Forwards are removed by RemoveZMEvent, we
     // just need to reset the handle.
     
-    if (ForwardOnEventManagerReady != INVALID_HANDLE)
-    {
-        RemoveZMEvent(EventOnEventManagerReady);
-        ForwardOnEventManagerReady = INVALID_HANDLE;
-    }
-    
     if (ForwardOnEventManagerDisable != INVALID_HANDLE)
     {
         RemoveZMEvent(EventOnEventManagerDisable);
@@ -85,10 +73,26 @@ DeletePredefinedEventsIfExists()
 
 /*____________________________________________________________________________*/
 
-FireOnEventManagerReady()
+ZMEvent:GetOnEventManagerDisableEvent()
 {
-    StartEvent(EventOnEventManagerReady);
-    FireZMEvent();
+    CreatePredefinedEventsIfNotExist();
+    return EventOnEventManagerDisable;
+}
+
+/*____________________________________________________________________________*/
+
+ZMEvent:GetOnEventsCreateEvent()
+{
+    CreatePredefinedEventsIfNotExist();
+    return EventOnEventsCreate;
+}
+
+/*____________________________________________________________________________*/
+
+ZMEvent:GetOnEventsCreatedEvent()
+{
+    CreatePredefinedEventsIfNotExist();
+    return EventOnEventsCreated;
 }
 
 /*____________________________________________________________________________*/
