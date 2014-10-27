@@ -254,8 +254,6 @@ AddModuleToIndex(ZMModule:module)
     new String:pluginID[16];
     GetHexString(plugin, pluginID, sizeof(pluginID));
     
-    PushArrayCell(ModuleList, module);
-    
     SetTrieValue(ModuleNameIndex, name, module);
     SetTrieValue(ModulePluginIndex, pluginID, module);
     LogMessage("Adding module to index. pluginID=%s | module=%x", pluginID, module);
@@ -284,12 +282,6 @@ RemoveModuleFromIndex(ZMModule:module)
     new Handle:plugin = GetModulePlugin(module);    
     new String:pluginHex[16];
     GetHexString(plugin, pluginHex, sizeof(pluginHex));
-    
-    new moduleIndex = FindValueInArray(ModuleList, module);
-    if (moduleIndex >= 0)
-    {
-        RemoveFromArray(ModuleList, moduleIndex);
-    }
     
     RemoveFromTrie(ModuleNameIndex, name);
     RemoveFromTrie(ModulePluginIndex, pluginHex);
