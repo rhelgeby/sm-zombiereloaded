@@ -98,7 +98,8 @@ but modules should be flexible enough to start over in the next round.
 
 /**
  * Predefined module manager library name to be used with OnLibraryAdded,
- * OnLibraryRemoved, and LibraryExists.
+ * OnLibraryRemoved, and LibraryExists. It should also be available in the
+ * dependency manager.
  */
 #define LIBRARY_ZM_MODULE_MANAGER "zm_module_manager"
 

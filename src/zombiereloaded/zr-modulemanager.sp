@@ -27,13 +27,10 @@
 
 #include <sourcemod>
 #include <zombie/core/modulemanager>
+#include <zombie/core/dependencymanager>
+#include <zombie/core/bootstrap/boot-dependencymanager>
 
 #include "zombiereloaded/common/version"
-
-#include "zombiereloaded/libraries/objectlib"
-#include "zombiereloaded/modulemanager/module"
-#include "zombiereloaded/modulemanager/feature"
-#include "zombiereloaded/modulemanager/natives"
 
 /*____________________________________________________________________________*/
 
@@ -78,36 +75,11 @@ new Handle:FeatureNameIndex = INVALID_HANDLE;
 
 /*____________________________________________________________________________*/
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
-{
-    LogMessage("Loading module manager.");
-    
-    if (LibraryExists(LIBRARY_ZM_MODULE_MANAGER))
-    {
-        Format(error, err_max, "Another ZM module manager is already loaded.");
-        return APLRes_Failure;
-    }
-    
-    InitAPI();
-    RegPluginLibrary(LIBRARY_ZM_MODULE_MANAGER);
-    
-    return APLRes_Success;
-}
-
-/*____________________________________________________________________________*/
-
-public OnPluginStart()
-{
-    InitializeDataStorage();
-    LogMessage("Module manager loaded.");
-}
-
-/*____________________________________________________________________________*/
-
-public OnPluginEnd()
-{
-    LogMessage("Module manager unloaded.");
-}
+#include "zombiereloaded/libraries/objectlib"
+#include "zombiereloaded/modulemanager/boot"
+#include "zombiereloaded/modulemanager/module"
+#include "zombiereloaded/modulemanager/feature"
+#include "zombiereloaded/modulemanager/natives"
 
 /*____________________________________________________________________________*/
 
