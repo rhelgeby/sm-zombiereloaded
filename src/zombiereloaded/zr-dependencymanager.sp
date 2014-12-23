@@ -27,7 +27,6 @@
 #include <sourcemod>
 #include <zombie/core/modulemanager>
 #include <zombie/core/dependencymanager>
-#include <zombie/core/bootstrap/boot-dependencymanager>
 
 #include "zombiereloaded/common/version"
 
@@ -48,19 +47,113 @@ public Plugin:myinfo =
 /*____________________________________________________________________________*/
 
 /**
- * Hash map of library names mapped to their objects.
+ * Hash map of library names mapped to library objects.
  */
 new Handle:Libraries = INVALID_HANDLE;
 
 /**
- * Hash map of plugin IDs mapped to their objects
+ * Hash map of plugin IDs mapped to dependent objects.
  */
-new Handle:Dependencies = INVALID_HANDLE;
+new Handle:Dependents = INVALID_HANDLE;
 
 /*____________________________________________________________________________*/
 
 #include "zombiereloaded/libraries/objectlib"
 #include "zombiereloaded/dependencymanager/library"
 #include "zombiereloaded/dependencymanager/dependent"
+#include "zombiereloaded/dependencymanager/natives"
 
 /*____________________________________________________________________________*/
+
+public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+{
+    LogMessage("Loading dependency manager.");
+    
+    if (LibraryExists(LIBRARY_ZM_DEPENDENCY_MANAGER))
+    {
+        Format(error, err_max, "Another ZM dependency manager is already loaded.");
+        return APLRes_Failure;
+    }
+    
+    InitAPI();
+    RegPluginLibrary(LIBRARY_ZM_DEPENDENCY_MANAGER);
+    
+    return APLRes_Success;
+}
+
+/*____________________________________________________________________________*/
+
+public OnPluginStart()
+{
+    InitializeDataStorage();
+}
+
+/*____________________________________________________________________________*/
+
+InitializeDataStorage()
+{
+    if (Libraries == INVALID_HANDLE)
+    {
+        Libraries = CreateTrie();
+    }
+    
+    if (Dependents == INVALID_HANDLE)
+    {
+        Dependents = CreateTrie();
+    }
+}
+
+/*____________________________________________________________________________*/
+
+Dependent:GetDependent(Handle:plugin)
+{
+    new String:pluginId[16];
+    GetHexString(plugin, pluginId, sizeof(pluginId));
+    
+    new Dependent:dependent = INVALID_DEPENDENT;
+    GetTrieValue(Dependents, pluginId, dependent);
+    return dependent;
+}
+
+/*____________________________________________________________________________*/
+
+SetDependent(const String:pluginId[], Dependent:dependent)
+{
+    SetTrieValue(Dependents, pluginId, dependent);
+}
+
+/*____________________________________________________________________________*/
+
+Dependent:InitializeDependent(Handle:plugin)
+{
+    new Dependent:dependent = CreateDependent();
+    
+    new String:pluginId[16];
+    GetHexString(plugin, pluginId, sizeof(pluginId));
+    
+    SetDependent(pluginId, dependent);
+    
+    return dependent;
+}
+
+/*____________________________________________________________________________*/
+
+Dependent:GetOrCreateDependent(Handle:plugin)
+{
+    new Dependent:dependent = GetDependent(plugin);
+    if (dependent != INVALID_DEPENDENT)
+    {
+        // Already created, return existing dependent.
+        return dependent;
+    }
+    
+    // Create a new dependent.
+    return InitializeDependent(plugin);
+}
+
+/*____________________________________________________________________________*/
+
+GetHexString(any:value, String:buffer[], maxlen)
+{
+    Format(buffer, maxlen, "%x", value);
+}
