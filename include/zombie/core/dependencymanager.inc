@@ -75,6 +75,9 @@ functag public ZM_OnDependenciesUnavailable();
  * @param ready         Function to call when all dependencies are ready.
  * @param unavailable   Function to call when one or more dependencies are being
  *                      unloaded.
+ *
+ * @noreturn
+ * @error               Invalid callback.
  */
 native ZM_SetDependencyCallbacks(
         ZM_OnDependenciesReady:ready,
@@ -94,6 +97,8 @@ native ZM_SetDependencyCallbacks(
  *
  * @param libraryName       Name of library to depend on. This should be the
  *                          name that libraries send to RegPluginLibrary.
+ *
+ * @noreturn
  */
 native ZM_DependsOn(const String:libraryName[]);
 
@@ -108,6 +113,8 @@ native ZM_DependsOn(const String:libraryName[]);
  * Warning: You must call this function in OnPluginEnd or earlier to release
  *          resources you've allocated before your plugin is unloaded. Otherwise
  *          the dependency manager will leak memory.
+ *
+ * @noreturn
  */
 native ZM_RemoveDependencies();
 
