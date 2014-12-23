@@ -65,6 +65,13 @@ new Handle:Dependents = INVALID_HANDLE;
 
 /*____________________________________________________________________________*/
 
+GetHexString(any:value, String:buffer[], maxlen)
+{
+    Format(buffer, maxlen, "%x", value);
+}
+
+/*____________________________________________________________________________*/
+
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
     LogMessage("Loading dependency manager.");
@@ -153,7 +160,43 @@ Dependent:GetOrCreateDependent(Handle:plugin)
 
 /*____________________________________________________________________________*/
 
-GetHexString(any:value, String:buffer[], maxlen)
+SetDependencyCallbacks(
+        Handle:plugin,
+        ZM_OnDependenciesReady:ready,
+        ZM_OnDependenciesUnavailable:unavailable)
 {
-    Format(buffer, maxlen, "%x", value);
+    if (!AssertValidReadyCallback(ready)
+        || AssertValidUnavailableCallback(unavailable))
+    {
+        return;
+    }
+    
+    new Dependent:dependent = GetOrCreateDependent(plugin);
+    SetCallbacks(dependent, ready, unavailable);
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertValidReadyCallback(ZM_OnDependenciesReady:ready)
+{
+    if (ready == INVALID_FUNCTION)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Invalid ready-callback: %x", ready);
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertValidUnavailableCallback(ZM_OnDependenciesUnavailable:unavailable)
+{
+    if (unavailable == INVALID_FUNCTION)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Invalid unavailable-callback: %x", unavailable);
+        return false;
+    }
+    
+    return true;
 }
