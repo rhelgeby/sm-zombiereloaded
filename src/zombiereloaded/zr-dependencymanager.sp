@@ -198,10 +198,9 @@ SetLibrary(const String:libraryName[], Library:library)
 /*____________________________________________________________________________*/
 
 Library:InitializeLibrary(
-        const String:libraryName[],
-        Handle:ownerPlugin = INVALID_HANDLE)
+        const String:libraryName[])
 {
-    new Library:library = CreateLibrary(ownerPlugin);
+    new Library:library = CreateLibrary();
     SetLibrary(libraryName, library);
     
     return library;
@@ -210,8 +209,7 @@ Library:InitializeLibrary(
 /*____________________________________________________________________________*/
 
 Library:GetOrCreateLibrary(
-        const String:libraryName[],
-        Handle:ownerPlugin = INVALID_HANDLE)
+        const String:libraryName[])
 {
     new Library:library = GetLibrary(libraryName);
     if (library != INVALID_LIBRARY)
@@ -219,7 +217,26 @@ Library:GetOrCreateLibrary(
         return library;
     }
     
-    return InitializeLibrary(libraryName, ownerPlugin);
+    return InitializeLibrary(libraryName);
+}
+
+/*____________________________________________________________________________*/
+
+AddLibrary(
+        const String:libraryName[],
+        Handle:ownerPlugin,
+        bool:manualReadyEvent)
+{
+    new Library:library = GetOrCreateLibrary(libraryName);
+    
+    if (!AssertLibraryNotDuplicate(ownerPlugin, library))
+    {
+        // Duplicate.
+        return;
+    }
+    
+    SetLibraryOwner(library, ownerPlugin);
+    SetLibraryReadyEvent(library, manualReadyEvent);
 }
 
 /*____________________________________________________________________________*/
@@ -259,6 +276,26 @@ bool:AssertValidUnavailableCallback(ZM_OnDependenciesUnavailable:unavailable)
     if (unavailable == INVALID_FUNCTION)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "Invalid unavailable-callback: %x", unavailable);
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertLibraryNotDuplicate(Handle:plugin, Library:library)
+{
+    new Handle:existingLibraryOwner = GetLibraryOwner(library);
+    if (existingLibraryOwner != INVALID_HANDLE
+        && existingLibraryOwner != plugin)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "The library is already added by another plugin: %x", existingLibraryOwner);
+        return false;
+    }
+    else if (existingLibraryOwner == plugin)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "The library is already added by this plugin.");
         return false;
     }
     

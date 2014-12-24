@@ -31,7 +31,8 @@ enum Library
     INVALID_LIBRARY = INVALID_OBJECT
 }
 
-#define LIBRARY_KEY_LEN      16
+#define LIBRARY_KEY_LEN     20
+#define LIBRARY_NAME_LEN    128
 
 /*____________________________________________________________________________*/
 
@@ -50,6 +51,7 @@ InitLibraryType()
     
     ObjLib_AddKey(LibraryType, "owner", ObjDataType_Handle);
     ObjLib_AddKey(LibraryType, "available", ObjDataType_Bool);
+    ObjLib_AddKey(LibraryType, "manualReadyEvent", ObjDataType_Bool);
 }
 
 /*____________________________________________________________________________*/
@@ -62,6 +64,7 @@ Library:CreateLibrary(Handle:owner = INVALID_HANDLE)
     
     ObjLib_SetHandle(library, "owner", owner);
     ObjLib_SetBool(library, "available", false);
+    ObjLib_SetBool(library, "manualReadyEvent", false);
     
     return Library:library;
 }
@@ -87,6 +90,13 @@ Handle:GetLibraryOwner(Library:library)
 
 /*____________________________________________________________________________*/
 
+SetLibraryOwner(Library:library, Handle:ownerPlugin)
+{
+    ObjLib_SetHandle(Object:library, "owner", ownerPlugin);
+}
+
+/*____________________________________________________________________________*/
+
 bool:IsLibraryAvailable(Library:library)
 {
     return ObjLib_GetBool(Object:library, "available");
@@ -96,5 +106,19 @@ bool:IsLibraryAvailable(Library:library)
 
 SetLibraryAvailable(Library:library, bool:available)
 {
-    return ObjLib_SetBool(Object:library, "available", available);
+    ObjLib_SetBool(Object:library, "available", available);
+}
+
+/*____________________________________________________________________________*/
+
+bool:HasLibraryReadyEvent(Library:library)
+{
+    return ObjLib_GetBool(Object:library, "manualReadyEvent");
+}
+
+/*____________________________________________________________________________*/
+
+SetLibraryReadyEvent(Library:library, bool:manualReadyEvent)
+{
+    ObjLib_SetBool(Object:library, "manualReadyEvent", manualReadyEvent);
 }

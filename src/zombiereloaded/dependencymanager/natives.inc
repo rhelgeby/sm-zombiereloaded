@@ -29,7 +29,7 @@ InitAPI()
     CreateNative("ZM_SetDependencyCallbacks", API_SetDependencyCallbacks);
     CreateNative("ZM_DependsOn", API_DependsOn);
     CreateNative("ZM_RemoveDependencies", API_RemoveDependencies);
-    //CreateNative("ZM_AddLibrary", API_AddLibrary);
+    CreateNative("ZM_AddLibrary", API_AddLibrary);
     //CreateNative("ZM_RemoveLibrary", API_RemoveLibrary);
     //CreateNative("ZM_RemoveLibraries", API_RemoveLibraries);
     //CreateNative("ZM_HasLibrary", API_HasLibrary);
@@ -75,7 +75,7 @@ public API_SetDependencyCallbacks(Handle:plugin, numParams)
 //native ZM_DependsOn(const String:libraryName[]);
 public API_DependsOn(Handle:plugin, numParams)
 {
-    new String:libraryName[128];
+    new String:libraryName[LIBRARY_NAME_LEN];
     GetNativeString(1, libraryName, sizeof(libraryName));
     
     new Dependent:dependent = GetOrCreateDependent(plugin);
@@ -119,6 +119,15 @@ public API_RemoveDependencies(Handle:plugin, numParams)
  *                          duplicate.
  */
 //native ZM_AddLibrary(const String:libraryName[], bool:manualReadyEvent = false);
+public API_AddLibrary(Handle:plugin, numParams)
+{
+    new String:libraryName[LIBRARY_NAME_LEN];
+    GetNativeString(1, libraryName, sizeof(libraryName));
+    
+    new bool:manualReadyEvent = GetNativeCell(2);
+    
+    AddLibrary(libraryName, plugin, manualReadyEvent);
+}
 
 /*____________________________________________________________________________*/
 
