@@ -131,6 +131,27 @@ SetDependent(const String:pluginId[], Dependent:dependent)
 
 /*____________________________________________________________________________*/
 
+RemoveDependent(Handle:plugin)
+{
+    // Note: This will only delete the dependent itself, not the libraries it
+    //       references.
+    
+    new Dependent:dependent = GetDependent(plugin);
+    if (dependent == INVALID_DEPENDENT)
+    {
+        // No dependent exist for this plugin.
+        return;
+    }
+
+    new String:pluginId[16];
+    GetHexString(plugin, pluginId, sizeof(pluginId));
+    
+    DeleteDependent(dependent);
+    RemoveFromTrie(Dependents, pluginId);
+}
+
+/*____________________________________________________________________________*/
+
 Dependent:InitializeDependent(Handle:plugin)
 {
     new Dependent:dependent = CreateDependent();

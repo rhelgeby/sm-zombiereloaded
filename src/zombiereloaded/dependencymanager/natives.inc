@@ -28,7 +28,7 @@ InitAPI()
 {
     CreateNative("ZM_SetDependencyCallbacks", API_SetDependencyCallbacks);
     CreateNative("ZM_DependsOn", API_DependsOn);
-    //CreateNative("ZM_RemoveDependencies", API_RemoveDependencies);
+    CreateNative("ZM_RemoveDependencies", API_RemoveDependencies);
     //CreateNative("ZM_AddLibrary", API_AddLibrary);
     //CreateNative("ZM_RemoveLibrary", API_RemoveLibrary);
     //CreateNative("ZM_RemoveLibraries", API_RemoveLibraries);
@@ -97,6 +97,10 @@ public API_DependsOn(Handle:plugin, numParams)
  *          the dependency manager will leak memory.
  */
 //native ZM_RemoveDependencies();
+public API_RemoveDependencies(Handle:plugin, numParams)
+{
+    RemoveDependent(plugin);
+}
 
 /*____________________________________________________________________________*/
 
