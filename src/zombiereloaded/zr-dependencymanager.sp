@@ -160,6 +160,49 @@ Dependent:GetOrCreateDependent(Handle:plugin)
 
 /*____________________________________________________________________________*/
 
+Library:GetLibrary(const String:libraryName[])
+{
+    new Library:library = INVALID_LIBRARY;
+    GetTrieValue(Libraries, libraryName, library);
+    return library;
+}
+
+/*____________________________________________________________________________*/
+
+SetLibrary(const String:libraryName[], Library:library)
+{
+    SetTrieValue(Libraries, libraryName, library);
+}
+
+/*____________________________________________________________________________*/
+
+Library:InitializeLibrary(
+        const String:libraryName[],
+        Handle:ownerPlugin = INVALID_HANDLE)
+{
+    new Library:library = CreateLibrary(ownerPlugin);
+    SetLibrary(libraryName, library);
+    
+    return library;
+}
+
+/*____________________________________________________________________________*/
+
+Library:GetOrCreateLibrary(
+        const String:libraryName[],
+        Handle:ownerPlugin = INVALID_HANDLE)
+{
+    new Library:library = GetLibrary(libraryName);
+    if (library != INVALID_LIBRARY)
+    {
+        return library;
+    }
+    
+    return InitializeLibrary(libraryName, ownerPlugin);
+}
+
+/*____________________________________________________________________________*/
+
 SetDependencyCallbacks(
         Handle:plugin,
         ZM_OnDependenciesReady:ready,
