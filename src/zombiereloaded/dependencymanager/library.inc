@@ -63,7 +63,7 @@ Library:CreateLibrary(Handle:owner = INVALID_HANDLE)
     ObjLib_SetHandle(library, "owner", owner);
     ObjLib_SetBool(library, "available", false);
     
-    return Library:dependent;
+    return Library:library;
 }
 
 /*____________________________________________________________________________*/

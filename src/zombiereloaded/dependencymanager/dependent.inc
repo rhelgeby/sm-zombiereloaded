@@ -95,6 +95,22 @@ Handle:GetDependencies(Dependent:dependent)
 
 /*____________________________________________________________________________*/
 
+AddDependency(Dependent:dependent, Library:library)
+{
+    new Handle:dependencies = GetDependencies(dependent);
+    
+    new index = FindValueInArray(dependencies, library);
+    if (index >= 0)
+    {
+        // Already added, ignore it.
+        return;
+    }
+    
+    PushArrayCell(dependencies, library);
+}
+
+/*____________________________________________________________________________*/
+
 ZM_OnDependenciesReady:GetReadyCallback(Dependent:dependent)
 {
     return ZM_OnDependenciesReady:ObjLib_GetFunction(Object:dependent, "readyCallback");

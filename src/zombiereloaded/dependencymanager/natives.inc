@@ -27,7 +27,7 @@
 InitAPI()
 {
     CreateNative("ZM_SetDependencyCallbacks", API_SetDependencyCallbacks);
-    //CreateNative("ZM_DependsOn", API_DependsOn);
+    CreateNative("ZM_DependsOn", API_DependsOn);
     //CreateNative("ZM_RemoveDependencies", API_RemoveDependencies);
     //CreateNative("ZM_AddLibrary", API_AddLibrary);
     //CreateNative("ZM_RemoveLibrary", API_RemoveLibrary);
@@ -73,10 +73,16 @@ public API_SetDependencyCallbacks(Handle:plugin, numParams)
  *                          name that libraries send to RegPluginLibrary.
  */
 //native ZM_DependsOn(const String:libraryName[]);
-
-// TODO: This native need to get or create a library object (without an owner).
-//       When a library is created, it should use the existing library if it
-//       doesn't have an owner.
+public API_DependsOn(Handle:plugin, numParams)
+{
+    new String:libraryName[128];
+    GetNativeString(1, libraryName, sizeof(libraryName));
+    
+    new Dependent:dependent = GetOrCreateDependent(plugin);
+    new Library:library = GetOrCreateLibrary(libraryName);
+    
+    AddDependency(dependent, library);
+}
 
 /*____________________________________________________________________________*/
 
