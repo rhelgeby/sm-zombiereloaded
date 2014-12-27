@@ -62,6 +62,7 @@ new Handle:Dependents = INVALID_HANDLE;
 #include "zombiereloaded/dependencymanager/library"
 #include "zombiereloaded/dependencymanager/dependent"
 #include "zombiereloaded/dependencymanager/natives"
+#include "zombiereloaded/dependencymanager/statewatcher"
 
 /*____________________________________________________________________________*/
 
@@ -237,6 +238,8 @@ AddLibrary(
     
     SetLibraryOwner(library, ownerPlugin);
     SetLibraryReadyEvent(library, manualReadyEvent);
+    
+    UpdateLibraryState(libraryName, library);
 }
 
 /*____________________________________________________________________________*/
