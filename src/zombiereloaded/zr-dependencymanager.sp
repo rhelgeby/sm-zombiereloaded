@@ -213,6 +213,30 @@ SetLibrary(const String:libraryName[], Library:library)
 
 /*____________________________________________________________________________*/
 
+RemoveLibrary(const String:libraryName[])
+{
+    new Library:library = GetLibrary(libraryName);
+    if (library == INVALID_LIBRARY)
+    {
+        ThrowError("Invalid library: %s", libraryName);
+    }
+    
+    // Update state and trigger events.
+    SetLibraryState(library, false);
+    
+    // Remove from library list, ignore if not found.
+    new libraryIndex = FindValueInArray(LibraryList, library);
+    if (libraryIndex >= 0)
+    {
+        RemoveFromArray(LibraryList, libraryIndex);
+    }
+    
+    RemoveFromTrie(Libraries, libraryName);
+    DeleteLibrary(library);
+}
+
+/*____________________________________________________________________________*/
+
 Library:InitializeLibrary(
         const String:libraryName[])
 {
