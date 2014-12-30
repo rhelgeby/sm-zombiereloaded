@@ -52,6 +52,11 @@ public Plugin:myinfo =
 new Handle:Libraries = INVALID_HANDLE;
 
 /**
+ * ADT array of known libraries. (Needed because the hash map is not iterable yet.)
+ */
+new Handle:LibraryList = INVALID_HANDLE;
+
+/**
  * Hash map of plugin IDs mapped to dependent objects.
  */
 new Handle:Dependents = INVALID_HANDLE;
@@ -103,6 +108,11 @@ InitializeDataStorage()
     if (Libraries == INVALID_HANDLE)
     {
         Libraries = CreateTrie();
+    }
+    
+    if (LibraryList == INVALID_HANDLE)
+    {
+        LibraryList = CreateArray();
     }
     
     if (Dependents == INVALID_HANDLE)
@@ -194,6 +204,11 @@ Library:GetLibrary(const String:libraryName[])
 SetLibrary(const String:libraryName[], Library:library)
 {
     SetTrieValue(Libraries, libraryName, library);
+    
+    if (FindValueInArray(LibraryList, library) == -1)
+    {
+        PushArrayCell(LibraryList, library);
+    }
 }
 
 /*____________________________________________________________________________*/
