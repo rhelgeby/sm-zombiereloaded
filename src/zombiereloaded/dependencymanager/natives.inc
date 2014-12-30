@@ -30,7 +30,7 @@ InitAPI()
     CreateNative("ZM_DependsOn", API_DependsOn);
     CreateNative("ZM_RemoveDependencies", API_RemoveDependencies);
     CreateNative("ZM_AddLibrary", API_AddLibrary);
-    //CreateNative("ZM_RemoveLibrary", API_RemoveLibrary);
+    CreateNative("ZM_RemoveLibrary", API_RemoveLibrary);
     //CreateNative("ZM_RemoveLibraries", API_RemoveLibraries);
     //CreateNative("ZM_HasLibrary", API_HasLibrary);
     //CreateNative("ZM_LibraryReady", API_LibraryReady);
@@ -146,6 +146,13 @@ public API_AddLibrary(Handle:plugin, numParams)
  *                          added by another plugin.
  */
 //native ZM_RemoveLibrary(const String:libraryName[]);
+public API_RemoveLibrary(Handle:plugin, numParams)
+{
+    new String:libraryName[LIBRARY_NAME_LEN];
+    GetNativeString(1, libraryName, sizeof(libraryName));
+    
+    RemoveLibrary(libraryName, plugin);
+}
 
 /*____________________________________________________________________________*/
 

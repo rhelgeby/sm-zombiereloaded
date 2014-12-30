@@ -213,12 +213,18 @@ SetLibrary(const String:libraryName[], Library:library)
 
 /*____________________________________________________________________________*/
 
-RemoveLibrary(const String:libraryName[])
+RemoveLibrary(const String:libraryName[], Handle:plugin = INVALID_HANDLE)
 {
     new Library:library = GetLibrary(libraryName);
-    if (library == INVALID_LIBRARY)
+    
+    if (!AssertValidLibrary(library, libraryName))
     {
-        ThrowError("Invalid library: %s", libraryName);
+        return;
+    }
+    
+    if (plugin != INVALID_HANDLE && !AssertIsLibraryOwner(plugin, library, libraryName))
+    {
+        return;
     }
     
     // Update state and trigger events.
@@ -338,6 +344,36 @@ bool:AssertLibraryNotDuplicate(Handle:plugin, Library:library)
     else if (existingLibraryOwner == plugin)
     {
         ThrowNativeError(SP_ERROR_ABORTED, "The library is already added by this plugin.");
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertValidLibrary(Library:library, const String:libraryName[])
+{
+    if (library == INVALID_LIBRARY)
+    {
+        ThrowNativeError(SP_ERROR_ABORTED, "Invalid library: %s", libraryName);
+        return false;
+    }
+    
+    return true;
+}
+
+/*____________________________________________________________________________*/
+
+bool:AssertIsLibraryOwner(Handle:plugin, Library:library, const String:libraryName[])
+{
+    new Handle:libraryOwner = GetLibraryOwner(library);
+    if (libraryOwner != plugin)
+    {
+        new String:pluginName[64];
+        GetPluginFilename(plugin, pluginName, sizeof(pluginName));
+        
+        ThrowNativeError(SP_ERROR_ABORTED, "Plugin %s does not own this library: %s", pluginName, libraryName);
         return false;
     }
     
