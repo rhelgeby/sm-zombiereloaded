@@ -24,6 +24,8 @@
  * ============================================================================
  */
 
+new bool:AllPluginsLoaded = false;
+
 UpdateLibraryState(
         const String:libraryName[],
         Library:library,
@@ -40,6 +42,15 @@ SetLibraryState(Library:library, bool:available, bool:triggerEvent = true)
     new bool:oldState = IsLibraryAvailable(library);
     SetLibraryAvailable(library, available);
     
+    if (!AllPluginsLoaded)
+    {
+        // All plugins aren't loaded yet. Wait to avoid repeated dependency
+        // state checks during configuration phase of all plugins. A new check
+        // will be done in OnAllPluginsLoaded. After that, it will do a full
+        // check for each library state change.
+        return;
+    }
+    
     if (triggerEvent && available != oldState)
     {
         // State change, check dependents.
@@ -51,6 +62,8 @@ SetLibraryState(Library:library, bool:available, bool:triggerEvent = true)
 
 public OnAllPluginsLoaded()
 {
+    AllPluginsLoaded = true;
+    
     // TODO: Loop through each known library and call UpdateLibraryState.
 }
 
