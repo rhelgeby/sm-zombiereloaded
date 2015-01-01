@@ -26,6 +26,39 @@
 
 new bool:AllPluginsLoaded = false;
 
+/*____________________________________________________________________________*/
+
+public OnAllPluginsLoaded()
+{
+    AllPluginsLoaded = true;
+    
+    // TODO: Loop through each known library and call UpdateLibraryState.
+}
+
+/*____________________________________________________________________________*/
+
+public OnLibraryAdded(const String:name[])
+{
+    new Library:library = GetLibrary(name);
+    if (library != INVALID_LIBRARY)
+    {
+        SetLibraryState(library, true);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+public OnLibraryRemoved(const String:name[])
+{
+    new Library:library = GetLibrary(name);
+    if (library != INVALID_LIBRARY)
+    {
+        SetLibraryState(library, false);
+    }
+}
+
+/*____________________________________________________________________________*/
+
 UpdateLibraryState(
         const String:libraryName[],
         Library:library,
@@ -56,35 +89,4 @@ SetLibraryState(Library:library, bool:available, bool:triggerEvent = true)
         // State change, check dependents.
         // TODO
     }    
-}
-
-/*____________________________________________________________________________*/
-
-public OnAllPluginsLoaded()
-{
-    AllPluginsLoaded = true;
-    
-    // TODO: Loop through each known library and call UpdateLibraryState.
-}
-
-/*____________________________________________________________________________*/
-
-public OnLibraryAdded(const String:name[])
-{
-    new Library:library = GetLibrary(name);
-    if (library != INVALID_LIBRARY)
-    {
-        SetLibraryState(library, true);
-    }
-}
-
-/*____________________________________________________________________________*/
-
-public OnLibraryRemoved(const String:name[])
-{
-    new Library:library = GetLibrary(name);
-    if (library != INVALID_LIBRARY)
-    {
-        SetLibraryState(library, false);
-    }
 }
