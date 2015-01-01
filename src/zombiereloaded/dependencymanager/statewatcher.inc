@@ -59,6 +59,28 @@ public OnLibraryRemoved(const String:name[])
 
 /*____________________________________________________________________________*/
 
+OnDependenciesReady(Dependent:dependent)
+{
+    new Handle:plugin = GetDependentPlugin(dependent);
+    new ZM_OnDependenciesReady:callback = GetReadyCallback(dependent);
+    
+    Call_StartFunction(plugin, callback);
+    Call_Finish();
+}
+
+/*____________________________________________________________________________*/
+
+OnDependenciesUnavailable(Dependent:dependent)
+{
+    new Handle:plugin = GetDependentPlugin(dependent);
+    new ZM_OnDependenciesUnavailable:callback = GetUnavailableCallback(dependent);
+    
+    Call_StartFunction(plugin, callback);
+    Call_Finish();
+}
+
+/*____________________________________________________________________________*/
+
 UpdateLibraryState(
         const String:libraryName[],
         Library:library,
@@ -89,4 +111,46 @@ SetLibraryState(Library:library, bool:available, bool:triggerEvent = true)
         // State change, check dependents.
         // TODO
     }    
+}
+
+/*____________________________________________________________________________*/
+
+CheckDependenciesFor(Dependent:dependent)
+{
+    new bool:lastReadyState = IsDependenciesReady(dependent);
+    
+    new Handle:dependencyList = GetDependencies(dependent);
+    new listSize = GetArraySize(dependencyList);
+    
+    // Assume all libraries are ready and check each library.
+    new bool:dependenciesReady = true;
+    for (new i = 0; i < listSize; i++)
+    {
+        new Library:library = Library:GetArrayCell(dependencyList, i);
+        
+        if (!IsLibraryAvailable(library))
+        {
+            dependenciesReady = false;
+            break;
+        }
+    }
+    
+    if (lastReadyState == dependenciesReady)
+    {
+        // No change in state. Do nothing for this dependent.
+        return;
+    }
+    
+    SetDependenciesReady(dependent, dependenciesReady);
+    
+    if (!lastReadyState && dependenciesReady)
+    {
+        // Dependencies are now available, trigger event.
+        OnDependenciesReady(dependent);
+    }
+    else if (lastReadyState && !dependenciesReady)
+    {
+        // One or more dependencies unavailable, trigger event.
+        OnDependenciesUnavailable(dependent);
+    }
 }
