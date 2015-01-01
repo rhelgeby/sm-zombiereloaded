@@ -52,6 +52,9 @@ InitDependentType()
     ObjLib_AddKey(DependentType, "dependencies", ObjDataType_Handle);
     ObjLib_AddKey(DependentType, "readyCallback", ObjDataType_Function);
     ObjLib_AddKey(DependentType, "unavailableCallback", ObjDataType_Function);
+    
+    // Current state of this dependent.
+    ObjLib_AddKey(DependentType, "dependenciesReady", ObjDataType_Bool);
 }
 
 /*____________________________________________________________________________*/
@@ -67,6 +70,8 @@ Dependent:CreateDependent()
     
     ObjLib_SetFunction(dependent, "readyCallback", INVALID_FUNCTION);
     ObjLib_SetFunction(dependent, "unavailableCallback", INVALID_FUNCTION);
+    
+    ObjLib_SetBool(dependent, "dependenciesReady", false);
     
     return Dependent:dependent;
 }
@@ -132,4 +137,18 @@ SetCallbacks(
 {
     ObjLib_SetFunction(Object:dependent, "readyCallback", ready);
     ObjLib_SetFunction(Object:dependent, "unavailableCallback", unavailable);
+}
+
+/*____________________________________________________________________________*/
+
+bool:IsDependenciesReady(Dependent:dependent)
+{
+    return ObjLib_GetBool(Object:dependent, "dependenciesReady");
+}
+
+/*____________________________________________________________________________*/
+
+SetDependenciesReady(Dependent:dependent, bool:ready)
+{
+    ObjLib_SetBool(Object:dependent, "dependenciesReady", ready);
 }
