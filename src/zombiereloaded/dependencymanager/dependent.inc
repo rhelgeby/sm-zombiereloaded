@@ -49,6 +49,7 @@ InitDependentType()
     
     DependentType = ObjLib_CreateType(blockSize, keySize);
     
+    ObjLib_AddKey(DependentType, "plugin", ObjDataType_Handle);
     ObjLib_AddKey(DependentType, "dependencies", ObjDataType_Handle);
     ObjLib_AddKey(DependentType, "readyCallback", ObjDataType_Function);
     ObjLib_AddKey(DependentType, "unavailableCallback", ObjDataType_Function);
@@ -59,11 +60,13 @@ InitDependentType()
 
 /*____________________________________________________________________________*/
 
-Dependent:CreateDependent()
+Dependent:CreateDependent(Handle:plugin)
 {
     InitDependentType();
     
     new Object:dependent = ObjLib_CreateObject(DependentType);
+    
+    ObjLib_SetHandle(dependent, "plugin", plugin);
     
     new Handle:dependencies = CreateArray();
     ObjLib_SetHandle(dependent, "dependencies", dependencies);
@@ -89,6 +92,13 @@ DeleteDependent(Dependent:dependent)
     CloseHandle(dependencies);
     
     ObjLib_DeleteObject(Object:dependent, false);
+}
+
+/*____________________________________________________________________________*/
+
+Handle:GetDependentPlugin(Dependent:dependent)
+{
+    return ObjLib_GetHandle(Object:dependent, "plugin");
 }
 
 /*____________________________________________________________________________*/

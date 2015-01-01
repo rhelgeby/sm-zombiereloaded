@@ -165,7 +165,7 @@ RemoveDependent(Handle:plugin)
 
 Dependent:InitializeDependent(Handle:plugin)
 {
-    new Dependent:dependent = CreateDependent();
+    new Dependent:dependent = CreateDependent(plugin);
     
     new String:pluginId[16];
     GetHexString(plugin, pluginId, sizeof(pluginId));
