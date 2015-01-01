@@ -109,7 +109,7 @@ SetLibraryState(Library:library, bool:available, bool:triggerEvent = true)
     if (triggerEvent && available != oldState)
     {
         // State change, check dependents.
-        // TODO
+        CheckAllDependents();
     }    
 }
 
@@ -152,5 +152,17 @@ CheckDependenciesFor(Dependent:dependent)
     {
         // One or more dependencies unavailable, trigger event.
         OnDependenciesUnavailable(dependent);
+    }
+}
+
+/*____________________________________________________________________________*/
+
+CheckAllDependents()
+{
+    new listSize = GetArraySize(DependentList);
+    for (new i = 0; i < listSize; i++)
+    {
+        new Dependent:dependent = Dependent:GetArrayCell(DependentList, i);
+        CheckDependenciesFor(dependent);
     }
 }

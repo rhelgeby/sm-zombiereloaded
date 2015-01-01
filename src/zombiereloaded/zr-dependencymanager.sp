@@ -61,6 +61,11 @@ new Handle:LibraryList = INVALID_HANDLE;
  */
 new Handle:Dependents = INVALID_HANDLE;
 
+/**
+ * ADT array of dependents.
+ */
+new Handle:DependentList = INVALID_HANDLE;
+
 /*____________________________________________________________________________*/
 
 #include "zombiereloaded/libraries/objectlib"
@@ -119,6 +124,11 @@ InitializeDataStorage()
     {
         Dependents = CreateTrie();
     }
+    
+    if (DependentList == INVALID_HANDLE)
+    {
+        DependentList = CreateArray();
+    }
 }
 
 /*____________________________________________________________________________*/
@@ -138,6 +148,11 @@ Dependent:GetDependent(Handle:plugin)
 SetDependent(const String:pluginId[], Dependent:dependent)
 {
     SetTrieValue(Dependents, pluginId, dependent);
+    
+    if (FindValueInArray(DependentList, dependent) == -1)
+    {
+        PushArrayCell(DependentList, dependent);
+    }
 }
 
 /*____________________________________________________________________________*/
